@@ -1,1 +1,1 @@
-# petty-cash-mg-system-backend
+# petty-cash-mgt-system-backend
