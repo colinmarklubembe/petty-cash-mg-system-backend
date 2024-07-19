@@ -1,6 +1,5 @@
 import { responses } from "../../../utils";
 import { Request, Response } from "express";
-import { organizationService } from "../../services";
 import userService from "../../auth/services/userService";
 
 interface AuthenticatedRequest extends Request {
@@ -38,32 +37,4 @@ const getUserById = async (req: Request, res: Response) => {
   }
 };
 
-const getUsersByOrganization = async (
-  req: AuthenticatedRequest,
-  res: Response
-) => {
-  try {
-    const { organizationId } = req.organization!;
-
-    const organization = await organizationService.findOrganizationById(
-      organizationId
-    );
-
-    if (!organization) {
-      return responses.errorResponse(res, 404, "Organization not found");
-    }
-
-    const users = await userService.findUsersByOrganization(organizationId);
-
-    responses.successResponse(
-      res,
-      200,
-      `Users for the organization ${organization.name} `,
-      { users: users }
-    );
-  } catch (error: any) {
-    responses.errorResponse(res, 500, error.message);
-  }
-};
-
-export default { getAllUsers, getUserById, getUsersByOrganization };
+export default { getAllUsers, getUserById };

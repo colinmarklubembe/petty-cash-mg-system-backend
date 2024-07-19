@@ -2,18 +2,18 @@ import { Router } from "express";
 
 import {
   signupController,
-  verifyUserController,
   loginController,
+  // verifyUserController,
   changePasswordController,
   forgotPasswordController,
-  inviteUserController,
+  // inviteUserController,
   updateProfileController,
   getUserController,
   deleteUserController,
 } from "../controllers";
 
 import {
-  authenticate,
+  // authenticate,
   checkMissingFields,
   loginLimiter,
 } from "../../middleware";
@@ -26,13 +26,13 @@ router.post(
   signupController.signup
 );
 
-router.get("/verify", verifyUserController.verifyUser);
+// router.get("/verify", verifyUserController.verifyUser);
 
-router.post(
-  "/reverify",
-  checkMissingFields(["email"]),
-  verifyUserController.reverifyUser
-);
+// router.post(
+//   "/reverify",
+//   checkMissingFields(["email"]),
+//   verifyUserController.reverifyUser
+// );
 
 router.post(
   "/login",
@@ -59,12 +59,12 @@ router.post(
   forgotPasswordController.forgotPassword
 );
 
-router.post(
-  "/invite-user",
-  checkMissingFields(["firstName", "lastName", "email"]),
-  authenticate.checkOrganizationId,
-  inviteUserController.inviteUser
-);
+// router.post(
+//   "/invite-user",
+//   checkMissingFields(["firstName", "lastName", "email"]),
+//   authenticate.checkOrganizationId,
+//   inviteUserController.inviteUser
+// );
 
 router.put(
   "/update-profile/:id",
@@ -75,12 +75,6 @@ router.put(
 router.get("/get-user/:id", getUserController.getUserById);
 
 router.get("/get-users", getUserController.getAllUsers);
-
-router.get(
-  "/get-users-by-organization",
-  authenticate.checkOrganizationId,
-  getUserController.getUsersByOrganization
-);
 
 router.delete("/delete-user/:id", deleteUserController.deleteUser);
 

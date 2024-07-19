@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { validate } from "class-validator";
 import { UserService } from "../services/user";
-import { User } from "../entities/User";
-import { AppDataSource } from "../config/data-source";
+import { User } from "../models/entities/User";
+import { AppDataSource } from "../models/config/data-source";
 
 export const createUser = async (req: Request, res: Response) => {
   const userRepository = AppDataSource.getRepository(User);

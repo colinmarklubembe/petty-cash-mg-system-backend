@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { UserType } from "@prisma/client";
 import {
   checkPasswordStrength,
   hashPassword,
@@ -9,11 +8,13 @@ import {
   responses,
 } from "../../../utils";
 import userService from "../services/userService";
+import { ObjectId } from "mongodb";
 
 const signup = async (req: Request, res: Response) => {
   try {
     const { firstName, middleName, lastName, email, password } = req.body;
 
+    // Check password strength
     const passwordStrength =
       checkPasswordStrength.validatePasswordStrength(password);
 
@@ -25,12 +26,14 @@ const signup = async (req: Request, res: Response) => {
       );
     }
 
+    // Check if user already exists
     const checkUser = await userService.findUserByEmail(email);
 
     if (checkUser) {
       return responses.errorResponse(res, 400, "User already exists");
     }
 
+    // Hash password
     const hashedPassword = await hashPassword(password);
 
     // Create the user data
@@ -39,48 +42,38 @@ const signup = async (req: Request, res: Response) => {
       middleName,
       lastName,
       email,
+      isVerified: false,
       password: hashedPassword,
-      userType: UserType.USER,
+      createdAt: new Date(),
+    };
+
+    // Create user
+    const user = await userService.createUser(data);
+
+    // Create token data with timestamp
+    const tokenData = {
+      id: user.id.toString(),
+      email: user.email,
+      username: user.firstName,
       createdAt: new Date().toISOString(),
     };
 
-    const user = await userService.createUser(data);
-
-    // create token data with timestamp
-    const tokenData = {
-      id: user.id,
-      email: user.email,
-      username: user.firstName,
-      createdAt: new Date().toISOString(), // temporarily store the timestamp of the token creation
-      userType: user.userType,
-    };
-
+    // Generate token
     const token = generateToken.generateToken(tokenData);
 
-    const userId = user.id;
+    // Prepare data for updating the user
+    const userId = user.id.toString(); // Convert ObjectId to string for updates
     const newData = {
       verificationToken: token,
     };
 
+    // Update user with verification token
     const updatedUser = await userService.updateUser(userId, newData);
 
-    const emailData = {
-      email: user.email,
-      name: user.firstName,
-      token,
-    };
-
-    const emailResponse: { status: number; message: any } =
-      await sendEmails.sendVerificationEmail(emailData);
-
-    systemLog.systemError(emailResponse.message);
-
-    responses.successResponse(
-      res,
-      201,
-      "User created successfully. Please verify your email",
-      updatedUser
-    );
+    // Send success response
+    responses.successResponse(res, 201, "User created successfully!", {
+      updatedUser,
+    });
   } catch (error: any) {
     responses.errorResponse(res, 500, error.message);
   }

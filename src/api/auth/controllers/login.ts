@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { organizationService } from "../../services";
 import { comparePassword, generateToken, responses } from "../../../utils";
 import userService from "../services/userService";
 
@@ -14,19 +13,19 @@ const login = async (req: Request, res: Response) => {
       return responses.errorResponse(res, 404, "User not found");
     }
 
+    // Check if user is verified
+    if (!user.isVerified) {
+      return responses.errorResponse(res, 401, "User is not verified");
+    }
+
     //check if user is active
     if (!user.isActivated) {
-      const userId = user.id;
+      const userId = user.id.toString();
       const newData = {
         isActivated: true,
       };
 
       const activateUser = await userService.updateUser(userId, newData);
-    }
-
-    // Check if user is verified
-    if (!user.isVerified) {
-      return responses.errorResponse(res, 401, "User is not verified");
     }
 
     const hashedPassword = user.password;
@@ -42,55 +41,21 @@ const login = async (req: Request, res: Response) => {
       );
     }
 
-    // Fetch organization IDs of the user
-    const userOrganizationIds = await organizationService.fetchOrganizationIds(
-      user
-    );
-
-    const organizationIds = userOrganizationIds;
-
-    const organizations = await organizationService.getUserOrganizationz(
-      organizationIds
-    );
-
-    // Map organization IDs to names
-    const organizationMap = organizations.reduce((acc: any, org: any) => {
-      acc[org.id] = org.name;
-      return acc;
-    }, {});
-
-    const organizationDetails = organizations.map((org: any) => ({
-      organizationId: org.id,
-      organizationName: org.name,
-    }));
-
-    const organizationId =
-      user.userOrganizations.length === 1
-        ? user.userOrganizations[0].organizationId
-        : null;
-
-    // update the user's organizationId
-    const userId = user.id;
-    const newData = {
-      organizationId: organizationId,
-    };
-
-    await userService.updateUser(userId, newData);
+    const userId = user.id.toString();
 
     // Create token data
     const tokenData = {
-      id: user.id,
+      id: userId,
       email: user.email,
       firstName: user.firstName,
       middleName: user.middleName,
       lastName: user.lastName,
-      userType: user.userType,
       isVerified: user.isVerified,
       createdAt: new Date().toISOString(), // temporarily store the token creation date
     };
 
     // get the updated user
-    const updatedUser = await userService.findUserById(user.id);
+    const updatedUser = await userService.findUserById(userId);
 
     // Create token
     const token = generateToken.generateToken(tokenData);

@@ -8,7 +8,7 @@ export const AppDataSource = new DataSource({
   useNewUrlParser: true,
   useUnifiedTopology: true,
   synchronize: true,
-  logging: false,
+  logging: true,
   entities: [User],
   migrations: [],
   subscribers: [],

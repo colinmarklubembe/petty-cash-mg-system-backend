@@ -16,7 +16,6 @@ const verifyUser = async (req: Request, res: Response) => {
       email: string;
       username: string;
       createdAt: string;
-      userType: any;
     };
 
     const userId = decoded.id;
@@ -71,13 +70,12 @@ const reverifyUser = async (req: Request, res: Response) => {
       email: user.email,
       username: user.firstName,
       createdAt: user.createdAt,
-      userType: user.userType,
     };
 
     // Create token
     const token = generateToken.generateToken(tokenData);
 
-    const userId = user.id;
+    const userId = user.id.toString();
 
     const newData = {
       verificationToken: token,

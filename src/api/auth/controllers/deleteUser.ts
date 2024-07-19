@@ -13,9 +13,9 @@ const deleteUser = async (req: Request, res: Response) => {
       return responses.errorResponse(res, 404, "User not found");
     }
 
-    const userId = user.id;
+    const userId = user.id.toString();
 
-    const deletedUser = await userService.deleteUserTransaction(userId);
+    const deletedUser = await userService.deleteUser(userId);
 
     responses.successResponse(res, 200, "User deleted successfully");
   } catch (error: any) {

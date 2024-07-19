@@ -1,5 +1,5 @@
-import { AppDataSource } from "../config/data-source";
-import { User } from "../entities/User";
+import { AppDataSource } from "../models/config/data-source";
+import { User } from "../models/entities/User";
 
 export class UserService {
   static async getAllUsers() {

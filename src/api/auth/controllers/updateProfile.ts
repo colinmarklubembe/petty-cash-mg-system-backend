@@ -13,7 +13,7 @@ const updateProfile = async (req: Request, res: Response) => {
       return responses.errorResponse(res, 404, "User not found");
     }
 
-    const userId = user.id;
+    const userId = user.id.toString();
 
     const newData = {
       firstName,
@@ -25,20 +25,18 @@ const updateProfile = async (req: Request, res: Response) => {
 
     const updatedUser = await userService.updateUser(userId, newData);
 
-    // send update profile email to user
-    const emailData = {
-      email: user.email,
-      name: user.firstName,
-    };
+    // // send update profile email to user
+    // const emailData = {
+    //   email: user.email,
+    //   name: user.firstName,
+    // };
 
-    // Send invitation email
-    const response = await sendEmails.sendUpdatedProfileEmail(emailData);
+    // // Send invitation email
+    // const response = await sendEmails.sendUpdatedProfileEmail(emailData);
 
-    if (response.status === 200) {
-      responses.successResponse(res, 200, "Profile updated successfully", {
-        user: updatedUser,
-      });
-    }
+    responses.successResponse(res, 200, "Profile updated successfully", {
+      user: updatedUser,
+    });
   } catch (error: any) {
     responses.errorResponse(res, 500, error.message);
   }
