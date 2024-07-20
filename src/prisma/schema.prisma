@@ -30,42 +30,47 @@ model Requisition {
   description       String?
   amount            Float
   requisitionStatus RequisitionStatus @default(PENDING)
+  pettyCashFundId   String            @db.ObjectId
+  pettyCashFund     PettyCashFund     @relation(fields: [pettyCashFundId], references: [id])
+  transactions      Transaction[]
   createdAt         DateTime?
   updatedAt         DateTime?
 }
 
 model PettyCashFund {
-  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  id             String        @id @default(auto()) @map("_id") @db.ObjectId
   currentBalance Float
-  totalSpent     Float
-  totalAdded     Float
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  userId         String   @db.ObjectId
-}
-
-model Approval {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  status        String
-  remarks       String?
-  createdAt     DateTime @default(now())
-  userId        String   @db.ObjectId
-  requisitionId String   @db.ObjectId
+  totalSpent     Float?
+  totalAdded     Float?
+  createdAt      DateTime?
+  updatedAt      DateTime?
+  userId         String        @db.ObjectId
+  requisitions   Requisition[]
+  transactions   Transaction[]
 }
 
 model Transaction {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String          @db.ObjectId
   amount          Float
-  type            String // e.g., "disbursement" or "replenishment"
-  createdAt       DateTime @default(now())
-  userId          String   @db.ObjectId
-  pettyCashFundId String   @db.ObjectId
+  type            TransactionType
+  pettyCashFundId String          @db.ObjectId
+  requisitionId   String?         @db.ObjectId
+  requisition     Requisition?    @relation(fields: [requisitionId], references: [id])
+  pettyCashFund   PettyCashFund   @relation(fields: [pettyCashFundId], references: [id])
+  createdAt       DateTime?
+  updatedAt       DateTime?
 }
 
 enum RequisitionStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum TransactionType {
+  DISBURSEMENT
+  REPLENISHMENT
 }
 
 enum Role {
