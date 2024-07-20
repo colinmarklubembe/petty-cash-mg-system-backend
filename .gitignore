@@ -1,8 +1,6 @@
-.idea/
-.vscode/
-node_modules/
-build/
-tmp/
-temp/
+node_modules
+# Keep environment variables out of version control
 .env
-dist/
+
+# Keep the dist folder out of version control
+dist

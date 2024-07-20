@@ -8,7 +8,6 @@ import {
   responses,
 } from "../../../utils";
 import userService from "../services/userService";
-import { ObjectId } from "mongodb";
 
 const signup = async (req: Request, res: Response) => {
   try {
@@ -44,7 +43,8 @@ const signup = async (req: Request, res: Response) => {
       email,
       isVerified: false,
       password: hashedPassword,
-      createdAt: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
     // Create user
@@ -52,7 +52,7 @@ const signup = async (req: Request, res: Response) => {
 
     // Create token data with timestamp
     const tokenData = {
-      id: user.id.toString(),
+      id: user.id,
       email: user.email,
       username: user.firstName,
       createdAt: new Date().toISOString(),
@@ -62,7 +62,7 @@ const signup = async (req: Request, res: Response) => {
     const token = generateToken.generateToken(tokenData);
 
     // Prepare data for updating the user
-    const userId = user.id.toString(); // Convert ObjectId to string for updates
+    const userId = user.id;
     const newData = {
       verificationToken: token,
     };
@@ -72,7 +72,7 @@ const signup = async (req: Request, res: Response) => {
 
     // Send success response
     responses.successResponse(res, 201, "User created successfully!", {
-      updatedUser,
+      user: updatedUser,
     });
   } catch (error: any) {
     responses.errorResponse(res, 500, error.message);

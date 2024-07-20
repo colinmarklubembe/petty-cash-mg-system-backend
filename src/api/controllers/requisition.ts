@@ -1,10 +1,7 @@
 import { Request, Response } from "express";
-import { responses } from "../../utils";
+import { responses, mapStringToEnum } from "../../utils";
 import userService from "../auth/services/userService";
-import { RequisitionStatus } from "../models/enums/RequisitionStatus";
 import { requisitionService } from "../services";
-import { mapStringToEnum } from "../../utils";
-import { ObjectId } from "mongodb";
 
 interface AuthenticatedRequest extends Request {
   user?: { email: string };
@@ -26,8 +23,7 @@ class RequisitionController {
         title,
         description,
         amount,
-        status: RequisitionStatus.PENDING,
-        user: user,
+        userId: user.id,
         createdAt: new Date(),
         updaredAt: new Date(),
       };
@@ -60,12 +56,10 @@ class RequisitionController {
       const requisition = await requisitionService.findRequisitionById(
         requisitionId
       );
-      console.log(requisition);
+
       if (!requisition) {
         return responses.errorResponse(res, 404, "Requisition not found");
       }
-      console.log(email);
-      console.log(requisition.user);
 
       if (requisition.user?.email !== email) {
         return responses.errorResponse(
@@ -82,7 +76,7 @@ class RequisitionController {
         title,
         description,
         amount,
-        status: mappedStatus,
+        requisitionStatus: mappedStatus,
         updatedAt: new Date(),
       };
 

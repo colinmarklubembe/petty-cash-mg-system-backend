@@ -75,7 +75,7 @@ const reverifyUser = async (req: Request, res: Response) => {
     // Create token
     const token = generateToken.generateToken(tokenData);
 
-    const userId = user.id.toString();
+    const userId = user.id;
 
     const newData = {
       verificationToken: token,

@@ -1,50 +1,51 @@
-import { AppDataSource } from "../../models/config/data-source";
-import { User } from "../../models/entities/User";
-import { ObjectId } from "mongodb";
+import prisma from "../../../prisma/client";
 
 class UserService {
-  private userRepository = AppDataSource.getMongoRepository(User);
-
-  async findUserByEmail(email: string): Promise<User | null> {
-    return await this.userRepository.findOneBy({ email });
+  async findUserByEmail(email: string) {
+    return prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
   }
 
-  async createUser(userData: Partial<User>): Promise<User> {
-    const user = this.userRepository.create(userData);
-    return await this.userRepository.save(user);
+  async createUser(data: any) {
+    return prisma.user.create({
+      data,
+    });
   }
 
-  async updateUser(userId: string, updateData: any): Promise<User | null> {
-    // Convert userId to ObjectId
-    const objectId = new ObjectId(userId);
-
-    // Use MongoDB's findOneAndUpdate to update and return the updated user
-    const result = await this.userRepository.findOneAndUpdate(
-      { _id: objectId },
-      { $set: updateData },
-      { returnDocument: "after" }
-    );
-
-    const updatedUser = result?.value;
-
-    return updatedUser;
+  async updateUser(userId: string, newData: any) {
+    return prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        ...newData,
+      },
+    });
   }
 
-  async findUserById(userId: string): Promise<User | null> {
-    const objectId = new ObjectId(userId);
-    return this.userRepository.findOneBy({ _id: objectId });
+  async findUserById(userId: string) {
+    return prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
   }
 
-  async getAllUsers(): Promise<User[]> {
-    const users = await this.userRepository.find();
-    return users;
+  async getAllUsers() {
+    return prisma.user.findMany();
   }
 
-  async deleteUser(userId: string): Promise<User | null> {
-    const objectId = new ObjectId(userId);
-    return (await this.userRepository.findOneAndDelete({
-      _id: objectId,
-    })) as User | null;
+  async deleteUser(userId: string) {
+    return prisma.user.$transaction([
+      prisma.user.delete({
+        where: {
+          id: userId,
+        },
+      }),
+    ]);
   }
 }
 

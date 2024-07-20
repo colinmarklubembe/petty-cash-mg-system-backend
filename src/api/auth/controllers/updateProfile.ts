@@ -13,7 +13,7 @@ const updateProfile = async (req: Request, res: Response) => {
       return responses.errorResponse(res, 404, "User not found");
     }
 
-    const userId = user.id.toString();
+    const userId = user.id;
 
     const newData = {
       firstName,

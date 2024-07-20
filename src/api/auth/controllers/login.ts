@@ -20,9 +20,10 @@ const login = async (req: Request, res: Response) => {
 
     //check if user is active
     if (!user.isActivated) {
-      const userId = user.id.toString();
+      const userId = user.id;
       const newData = {
         isActivated: true,
+        updatedAt: new Date().toISOString(),
       };
 
       const activateUser = await userService.updateUser(userId, newData);
@@ -41,7 +42,7 @@ const login = async (req: Request, res: Response) => {
       );
     }
 
-    const userId = user.id.toString();
+    const userId = user.id;
 
     // Create token data
     const tokenData = {

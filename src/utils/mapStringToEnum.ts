@@ -1,5 +1,5 @@
-import { RequisitionStatus } from "../api/models/enums/RequisitionStatus";
-import { Role } from "../api/models/enums/Role";
+import { RequisitionStatus } from "@prisma/client";
+import { Role } from "@prisma/client";
 
 class EnumMapper {
   mapStringToRequisitionStatus(status: string): RequisitionStatus | any {
