@@ -3,6 +3,8 @@ import { DataSource } from "typeorm";
 import { User } from "../entities/User";
 import { Requisition } from "../entities/Requisition";
 import { PettyCashFund } from "../entities/PettyCashFund";
+import { Approval } from "../entities/Approval";
+import { Transaction } from "../entities/Transaction";
 
 export const AppDataSource = new DataSource({
   type: "mongodb",
@@ -11,7 +13,7 @@ export const AppDataSource = new DataSource({
   useUnifiedTopology: true,
   synchronize: true,
   logging: true,
-  entities: [User, Requisition, PettyCashFund],
+  entities: [User, Requisition, PettyCashFund, Approval, Transaction],
   migrations: [],
   subscribers: [],
 });

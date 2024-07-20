@@ -6,14 +6,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
 } from "typeorm";
 import { User } from "./User";
-
-export enum RequisitionStatus {
-  PENDING = "pending",
-  APPROVED = "approved",
-  REJECTED = "rejected",
-}
+import { Approval } from "./Approval";
+import { RequisitionStatus } from "../enums/RequisitionStatus";
 
 @Entity()
 export class Requisition {
@@ -44,4 +41,7 @@ export class Requisition {
 
   @ManyToOne(() => User, (user) => user.requisitions)
   user?: User;
+
+  @OneToMany(() => Approval, (approval) => approval.requisition)
+  approvals?: Approval[];
 }

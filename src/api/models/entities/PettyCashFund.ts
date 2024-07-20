@@ -6,8 +6,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
 } from "typeorm";
 import { User } from "./User";
+import { Transaction } from "./Transaction";
 
 @Entity()
 export class PettyCashFund {
@@ -31,4 +33,7 @@ export class PettyCashFund {
 
   @ManyToOne(() => User, (user) => user.pettyCashFunds)
   user?: User;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.pettyCashFund)
+  transactions?: Transaction[];
 }

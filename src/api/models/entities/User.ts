@@ -8,10 +8,12 @@ import {
   Unique,
   OneToMany,
 } from "typeorm";
-import { IsEmail, Length, IsBoolean, IsOptional } from "class-validator";
+import { IsEmail, IsBoolean } from "class-validator";
 import { Role } from "../enums/Role";
 import { Requisition } from "./Requisition";
 import { PettyCashFund } from "./PettyCashFund";
+import { Approval } from "./Approval";
+import { Transaction } from "./Transaction";
 
 @Entity()
 @Unique(["email"])
@@ -61,9 +63,17 @@ export class User {
   @UpdateDateColumn()
   updatedAt?: Date;
 
-  @OneToMany(() => Requisition, (requisition) => requisition.user)
+  @OneToMany(() => Requisition, (requisition) => requisition.user, {
+    eager: true,
+  })
   requisitions?: Requisition[];
 
   @OneToMany(() => PettyCashFund, (pettyCashFund) => pettyCashFund.user)
   pettyCashFunds?: PettyCashFund[];
+
+  @OneToMany(() => Approval, (approval) => approval.approvedBy)
+  approvals?: Approval[];
+
+  @OneToMany(() => Transaction, (transaction) => transaction.user)
+  transactions?: Transaction[];
 }

@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import express from "express";
 import { AppDataSource } from "./api/models/config/data-source";
+import { requisitionRouter } from "./api/routes";
 import authRouter from "./api/auth/routes/authRoutes";
 
 const cors = require("cors");
@@ -15,6 +16,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 app.use("/auth", authRouter);
+app.use("/requisitions", requisitionRouter);
 
 AppDataSource.initialize()
   .then(() => {
