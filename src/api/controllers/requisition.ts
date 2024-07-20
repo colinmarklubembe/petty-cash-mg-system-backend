@@ -24,8 +24,8 @@ class RequisitionController {
         description,
         amount,
         userId: user.id,
-        createdAt: new Date(),
-        updaredAt: new Date(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       const requisition = await requisitionService.createRequisition(data);
@@ -61,7 +61,7 @@ class RequisitionController {
         return responses.errorResponse(res, 404, "Requisition not found");
       }
 
-      if (requisition.user?.email !== email) {
+      if (requisition.userId !== user.id) {
         return responses.errorResponse(
           res,
           403,
@@ -77,7 +77,7 @@ class RequisitionController {
         description,
         amount,
         requisitionStatus: mappedStatus,
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString(),
       };
 
       const updatedRequisition = await requisitionService.updateRequisition(
@@ -115,11 +115,11 @@ class RequisitionController {
         return responses.errorResponse(res, 404, "Requisition not found");
       }
 
-      if (requisition.user?.email !== email) {
+      if (requisition.userId !== user.id) {
         return responses.errorResponse(
           res,
           403,
-          "You are not allowed to view this requisition"
+          "You are not allowed to update this requisition"
         );
       }
 
@@ -128,6 +128,46 @@ class RequisitionController {
         200,
         "Requisition retrieved successfully",
         { requisition: requisition }
+      );
+    } catch (error: any) {
+      return responses.errorResponse(res, 500, error.message);
+    }
+  }
+
+  async getAllRequisitions(req: Request, res: Response) {
+    try {
+      const requisitions = await requisitionService.getAllRequisitions();
+
+      return responses.successResponse(
+        res,
+        200,
+        "Requisitions retrieved successfully",
+        { requisitions: requisitions }
+      );
+    } catch (error: any) {
+      return responses.errorResponse(res, 500, error.message);
+    }
+  }
+
+  async getUserRequisitions(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { email } = req.user!;
+
+      const user = await userService.findUserByEmail(email);
+
+      if (!user) {
+        return responses.errorResponse(res, 404, "User not found");
+      }
+
+      const requisitions = await requisitionService.getUserRequisitions(
+        user.id
+      );
+
+      return responses.successResponse(
+        res,
+        200,
+        "Requisitions retrieved successfully",
+        { requisitions: requisitions }
       );
     } catch (error: any) {
       return responses.errorResponse(res, 500, error.message);

@@ -16,4 +16,18 @@ router.put(
   requisitionController.updateRequisition
 );
 
+router.get("/all", requisitionController.getAllRequisitions);
+
+router.get(
+  "get-requisition/:requisitionId",
+  authenticate.authenticateToken,
+  requisitionController.getRequisitionById
+);
+
+router.get(
+  "/user-requisitions",
+  authenticate.authenticateToken,
+  requisitionController.getUserRequisitions
+);
+
 export default router;

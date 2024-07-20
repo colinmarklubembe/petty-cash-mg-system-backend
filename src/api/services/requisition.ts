@@ -21,6 +21,16 @@ class RequisitionService {
       where: { id: requisitionId },
     });
   }
+
+  async getAllRequisitions() {
+    return prisma.requisition.findMany();
+  }
+
+  async getUserRequisitions(userId: string) {
+    return prisma.requisition.findMany({
+      where: { userId },
+    });
+  }
 }
 
 export default new RequisitionService();
