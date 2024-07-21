@@ -33,6 +33,14 @@ class RequisitionService {
       where: { userId },
     });
   }
+
+  async deleteRequisition(requisitionId: string) {
+    return prisma.$transaction([
+      prisma.requisition.delete({
+        where: { id: requisitionId },
+      }),
+    ]);
+  }
 }
 
 export default new RequisitionService();

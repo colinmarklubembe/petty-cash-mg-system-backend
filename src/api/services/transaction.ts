@@ -31,7 +31,7 @@ class TransactionService {
   }
 
   async deleteTransaction(transactionId: string) {
-    return prisma.transaction.$transaction([
+    return prisma.$transaction([
       prisma.transaction.delete({
         where: {
           id: transactionId,

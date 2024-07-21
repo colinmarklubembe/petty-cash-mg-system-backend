@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRoutes from "./api/auth/routes/authRoutes";
-import { requisitionRouter } from "./api/routes";
+import { requisitionRouter, transactionRouter, fundRouter } from "./api/routes";
 
 dotenv.config();
 
@@ -23,7 +23,9 @@ mongoose
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/funds", fundRouter);
 app.use("/api/requisitions", requisitionRouter);
+app.use("/api/transactions", transactionRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

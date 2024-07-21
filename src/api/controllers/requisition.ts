@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, response, Response } from "express";
 import { responses, mapStringToEnum } from "../../utils";
 import userService from "../auth/services/userService";
 import { requisitionService } from "../services";
@@ -173,6 +173,26 @@ class RequisitionController {
     } catch (error: any) {
       return responses.errorResponse(res, 500, error.message);
     }
+  }
+
+  async deleteRequisition(req: Request, res: Response) {
+    const { requisitionId } = req.params;
+
+    const requisition = await requisitionService.findRequisitionById(
+      requisitionId
+    );
+
+    if (!requisition) {
+      return responses.errorResponse(res, 404, "Requisition not found");
+    }
+
+    await requisitionService.deleteRequisition(requisitionId);
+
+    return responses.successResponse(
+      res,
+      200,
+      "Requisitions deleted successfully"!
+    );
   }
 }
 
