@@ -29,7 +29,7 @@ model Requisition {
   userId            String            @db.ObjectId
   description       String?
   amount            Float
-  requisitionStatus RequisitionStatus @default(PENDING)
+  requisitionStatus RequisitionStatus @default(DRAFTS)
   pettyCashFundId   String            @db.ObjectId
   pettyCashFund     PettyCashFund     @relation(fields: [pettyCashFundId], references: [id])
   transactions      Transaction[]
@@ -63,6 +63,7 @@ model Transaction {
 }
 
 enum RequisitionStatus {
+  DRAFTS
   PENDING
   APPROVED
   REJECTED

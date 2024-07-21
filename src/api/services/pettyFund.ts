@@ -16,6 +16,10 @@ class PettyCashFundService {
       where: {
         id: fundId,
       },
+      include: {
+        requisitions: true,
+        transactions: true,
+      },
     });
   }
 
@@ -23,6 +27,10 @@ class PettyCashFundService {
     return prisma.pettyCashFund.findMany({
       where: {
         userId: userId,
+      },
+      include: {
+        requisitions: true,
+        transactions: true,
       },
     });
   }

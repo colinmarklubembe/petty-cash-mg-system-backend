@@ -1,4 +1,5 @@
 import prisma from "../../prisma/client";
+import transaction from "../controllers/transaction";
 
 class RequisitionService {
   async createRequisition(data: any) {
@@ -19,6 +20,7 @@ class RequisitionService {
   async findRequisitionById(requisitionId: string) {
     return prisma.requisition.findUnique({
       where: { id: requisitionId },
+      include: { transactions: true },
     });
   }
 

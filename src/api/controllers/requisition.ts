@@ -11,7 +11,7 @@ class RequisitionController {
   async createRequisition(req: AuthenticatedRequest, res: Response) {
     try {
       const { email } = req.user!;
-      const { title, description, amount } = req.body;
+      const { title, description, amount, pettyCashFundId } = req.body;
 
       const user = await userService.findUserByEmail(email);
 
@@ -21,8 +21,9 @@ class RequisitionController {
 
       const data = {
         title,
-        description,
         amount,
+        description,
+        pettyCashFundId,
         userId: user.id,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

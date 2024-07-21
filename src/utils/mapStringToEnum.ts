@@ -4,6 +4,8 @@ import { Role } from "@prisma/client";
 class EnumMapper {
   mapStringToRequisitionStatus(status: string): RequisitionStatus | any {
     switch (status) {
+      case "DRAFTS" || "drafts":
+        return RequisitionStatus.DRAFTS;
       case "PENDING" || "pending":
         return RequisitionStatus.PENDING;
       case "APPROVED" || "approved":
