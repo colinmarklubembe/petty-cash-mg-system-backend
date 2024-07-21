@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { responses } from "../../utils";
-import { transactionService } from "../services";
+import { transactionService, requisitionService } from "../services";
 import userService from "../auth/services/userService";
 
 interface AuthenticatedRequest extends Request {
@@ -11,7 +11,7 @@ class TransactionController {
   async create(req: AuthenticatedRequest, res: Response) {
     try {
       const { email } = req.user!;
-      const { amount, type } = req.body;
+      const { amount, type, requisitionId } = req.body;
 
       const user = await userService.findUserByEmail(email);
 
@@ -19,9 +19,22 @@ class TransactionController {
         return responses.errorResponse(res, 404, "User not found");
       }
 
+      const requisition = await requisitionService.findRequisitionById(
+        requisitionId
+      );
+
+      if (!requisition) {
+        return responses.errorResponse(res, 404, "Requisition not found");
+      }
+
+      // get the petty cash fund from the requisition
+      const pettyCashFundId = requisition.pettyCashFundId;
+
       const data = {
         amount,
         type,
+        pettyCashFundId,
+        requisitionId,
         userId: user.id,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
