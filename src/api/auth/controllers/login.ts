@@ -14,9 +14,9 @@ const login = async (req: Request, res: Response) => {
     }
 
     // Check if user is verified
-    if (!user.isVerified) {
-      return responses.errorResponse(res, 401, "User is not verified");
-    }
+    // if (!user.isVerified) {
+    //   return responses.errorResponse(res, 401, "User is not verified");
+    // }
 
     //check if user is active
     if (!user.isActivated) {
