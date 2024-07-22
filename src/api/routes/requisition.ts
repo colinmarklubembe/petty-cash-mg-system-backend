@@ -19,7 +19,7 @@ router.put(
 router.get("/all", requisitionController.getAllRequisitions);
 
 router.get(
-  "get-requisition/:requisitionId",
+  "/get-requisition/:requisitionId",
   authenticate.authenticateToken,
   requisitionController.getRequisitionById
 );

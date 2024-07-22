@@ -1,5 +1,4 @@
 import prisma from "../../prisma/client";
-import transaction from "../controllers/transaction";
 
 class RequisitionService {
   async createRequisition(data: any) {

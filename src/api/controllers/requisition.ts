@@ -71,7 +71,7 @@ class RequisitionController {
       }
 
       let mappedStatus: any;
-      mappedStatus = mapStringToEnum.mapStringToRequisitionStatus(status);
+      mappedStatus = mapStringToEnum.mapStringToRequisitionStatus(res, status);
 
       const newData = {
         title,

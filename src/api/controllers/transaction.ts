@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
-import { responses } from "../../utils";
-import { transactionService, requisitionService } from "../services";
+import { RequisitionStatus } from "@prisma/client";
+import { mapStringToEnum, responses } from "../../utils";
+import {
+  transactionService,
+  requisitionService,
+  fundService,
+} from "../services";
 import userService from "../auth/services/userService";
 
 interface AuthenticatedRequest extends Request {
@@ -27,12 +32,78 @@ class TransactionController {
         return responses.errorResponse(res, 404, "Requisition not found");
       }
 
+      if (requisition.requisitionStatus !== RequisitionStatus.APPROVED) {
+        return responses.errorResponse(
+          res,
+          400,
+          "Requisition must be approved before creating a transaction"
+        );
+      }
+
       // get the petty cash fund from the requisition
       const pettyCashFundId = requisition.pettyCashFundId;
 
+      const pettyFund = await fundService.getPettyCashFundById(pettyCashFundId);
+
+      if (!pettyFund) {
+        return responses.errorResponse(res, 404, "Petty cash fund not found");
+      }
+
+      if (type === "debit" || type === "DEBIT") {
+        let mappedType: any;
+        mappedType = mapStringToEnum.mapStringToTransactionType(res, type);
+
+        const data = {
+          amount,
+          type: mappedType,
+          pettyCashFundId,
+          requisitionId,
+          userId: user.id,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        const transaction = await transactionService.createTransaction(data);
+        // check if the amount is greater than the petty cash fund balance
+        if (amount > pettyFund.currentBalance) {
+          return responses.errorResponse(
+            res,
+            400,
+            "Amount is greater than the petty cash fund balance"
+          );
+        }
+
+        // deduct the amount from the petty cash fund balance
+        const currentBalance = pettyFund.currentBalance - amount;
+        const totalSpent = pettyFund.totalSpent + amount;
+
+        // update the petty cash fund
+        const newData = {
+          currentBalance,
+          totalSpent,
+          updatedAt: new Date().toISOString(),
+        };
+
+        await fundService.updatePettyCashFund(pettyCashFundId, newData);
+
+        const updatedPettyFund = await fundService.getPettyCashFundById(
+          pettyCashFundId
+        );
+
+        return responses.successResponse(
+          res,
+          201,
+          "Transaction created successfully",
+          { transaction, pettyFund: updatedPettyFund }
+        );
+      }
+
+      let mappedType: any;
+      mappedType = mapStringToEnum.mapStringToTransactionType(res, type);
+
       const data = {
         amount,
-        type,
+        type: mappedType,
         pettyCashFundId,
         requisitionId,
         userId: user.id,
@@ -42,11 +113,28 @@ class TransactionController {
 
       const transaction = await transactionService.createTransaction(data);
 
+      // add the amount to the petty cash fund balance
+      const currentBalance = pettyFund.currentBalance + amount;
+      const totalAdded = pettyFund.totalAdded + amount;
+
+      // update the petty cash fund
+      const newData = {
+        currentBalance,
+        totalAdded,
+        updatedAt: new Date().toISOString(),
+      };
+
+      await fundService.updatePettyCashFund(pettyCashFundId, newData);
+
+      const updatedPettyFund = await fundService.getPettyCashFundById(
+        pettyCashFundId
+      );
+
       return responses.successResponse(
         res,
         201,
         "Transaction created successfully",
-        { transaction }
+        { transaction, pettyFund: updatedPettyFund }
       );
     } catch (error: any) {
       return responses.errorResponse(res, 500, error.message);
@@ -57,7 +145,7 @@ class TransactionController {
     try {
       const { email } = req.user!;
       const { transactionId } = req.params;
-      const { amount, type } = req.body;
+      const { amount, type, requisitionId } = req.body;
 
       const user = await userService.findUserByEmail(email);
 
@@ -73,9 +161,30 @@ class TransactionController {
         return responses.errorResponse(res, 404, "Transaction not found");
       }
 
+      const requisition = await requisitionService.findRequisitionById(
+        requisitionId
+      );
+
+      if (!requisition) {
+        return responses.errorResponse(res, 404, "Requisition not found");
+      }
+
+      if (transaction.requisitionId !== requisitionId) {
+        return responses.errorResponse(
+          res,
+          400,
+          "Transaction does not belong to the requisition"
+        );
+      }
+
+      // get the petty cash fund from the requisition
+
+      let mappedType: any;
+      mappedType = mapStringToEnum.mapStringToTransactionType(res, type);
+
       const newData = {
         amount,
-        type,
+        type: mappedType,
         updatedAt: new Date().toISOString(),
       };
 

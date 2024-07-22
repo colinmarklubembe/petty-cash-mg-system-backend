@@ -1,19 +1,50 @@
-import { RequisitionStatus } from "@prisma/client";
-import { Role } from "@prisma/client";
+import { Response } from "express";
+import { responses } from ".";
+import { RequisitionStatus, TransactionType, Role } from "@prisma/client";
 
 class EnumMapper {
-  mapStringToRequisitionStatus(status: string): RequisitionStatus | any {
-    switch (status) {
-      case "DRAFTS" || "drafts":
+  mapStringToRequisitionStatus(
+    res: Response,
+    status: string
+  ): RequisitionStatus | any {
+    switch (status.toUpperCase()) {
+      case "DRAFTS":
         return RequisitionStatus.DRAFTS;
-      case "PENDING" || "pending":
+      case "PENDING":
         return RequisitionStatus.PENDING;
-      case "APPROVED" || "approved":
+      case "APPROVED":
         return RequisitionStatus.APPROVED;
-      case "REJECTED" || "rejected":
+      case "REJECTED":
         return RequisitionStatus.REJECTED;
       default:
-        return { status: 400, message: "Invalid status" };
+        return responses.errorResponse(res, 400, "Invalid requisition status");
+    }
+  }
+
+  mapStringToTransactionType(
+    res: Response,
+    type: string
+  ): TransactionType | any {
+    switch (type.toUpperCase()) {
+      case "DEBIT":
+        return TransactionType.DEBIT;
+      case "CREDIT":
+        return TransactionType.CREDIT;
+      default:
+        return responses.errorResponse(res, 400, "Invalid transaction type");
+    }
+  }
+
+  mapStringToRole(res: Response, role: string): Role | any {
+    switch (role.toUpperCase()) {
+      case "ADMIN":
+        return Role.ADMIN;
+      case "FINANCE":
+        return Role.FINANCE;
+      case "EMPLOYEE":
+        return Role.EMPLOYEE;
+      default:
+        return responses.errorResponse(res, 400, "Invalid role");
     }
   }
 }

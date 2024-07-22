@@ -70,8 +70,8 @@ enum RequisitionStatus {
 }
 
 enum TransactionType {
-  DISBURSEMENT
-  REPLENISHMENT
+  DEBIT
+  CREDIT
 }
 
 enum Role {
