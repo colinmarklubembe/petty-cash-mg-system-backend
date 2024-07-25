@@ -1,139 +1,93 @@
-// import { UserType } from "@prisma/client";
-// import { Request, Response } from "express";
-// import {
-//   sendEmails,
-//   generateRandomPassword,
-//   hashPassword,
-//   systemLog,
-//   responses,
-// } from "../../../utils";
-// import { organizationService } from "../../services";
-// import userService from "../services/userService";
+import { Request, Response } from "express";
+import {
+  generateRandomPassword,
+  mapStringToEnum,
+  responses,
+  sendEmails,
+} from "../../../utils";
+import { companyService } from "../../services";
+import userService from "../../auth/services/userService";
 
-// interface AuthenticatedRequest extends Request {
-//   organization?: { organizationId: string };
-// }
+interface AuthenticatedRequest extends Request {
+  user?: { email: string };
+  company?: { companyId: string };
+}
 
-// const inviteUser = async (req: AuthenticatedRequest, res: Response) => {
-//   const { firstName, middleName, lastName, email } = req.body;
+class InviteUser {
+  async existingUser(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { companyId } = req.company!;
+      const { email, role } = req.body;
 
-//   const { organizationId } = req.organization!;
+      const user = await userService.findUserByEmail(email);
 
-//   try {
-//     // Check if user already exists
-//     const existingUser = await userService.findUserByEmail(email);
+      if (!user) {
+        return responses.errorResponse(res, 404, "User not found");
+      }
 
-//     if (existingUser) {
-//       // get the organization with the id of organizationId
-//       const organization = await organizationService.findOrganizationById(
-//         organizationId
-//       );
+      const userId = user.id;
+      let mappedRole: any;
+      mappedRole = mapStringToEnum.mapStringToRole(res, role);
 
-//       const userId = existingUser.id;
-//       // add the user to the organization if the user is not already in the organization
-//       const userOrganization = await userService.findUserOrganization(
-//         userId,
-//         organizationId
-//       );
+      await companyService.addUserToCompany(userId, companyId, mappedRole);
 
-//       if (userOrganization) {
-//         return responses.errorResponse(
-//           res,
-//           400,
-//           "User is already in this organization!"
-//         );
-//       }
+      return responses.successResponse(res, 201, "User invited successfully");
+    } catch (error: any) {
+      return responses.errorResponse(res, 500, error.message);
+    }
+  }
 
-//       // add the user to the organization
-//       const newUserOrganization = await userService.addUserToOrganization(
-//         userId,
-//         organizationId
-//       );
+  async newUser(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { companyId } = req.company!;
+      const { email, role } = req.body;
 
-//       const updatedUser = await userService.findUserById(userId);
+      const user = await userService.findUserByEmail(email);
 
-//       // Send invitation email
-//       const emailData = {
-//         email: updatedUser.email,
-//         name: updatedUser.firstName,
-//         organization: organization.name,
-//       };
+      if (user) {
+        return responses.errorResponse(
+          res,
+          404,
+          "User already exists in this company"
+        );
+      }
 
-//       const response = await sendEmails.sendInviteEmailToExistingUser(
-//         emailData
-//       );
+      const company = await companyService.getCompany(companyId);
 
-//       return responses.successResponse(
-//         res,
-//         200,
-//         "Invitation email sent successfully!",
-//         { user: updatedUser }
-//       );
-//     } else {
-//       // generate random password
-//       const password = generateRandomPassword();
+      const password = generateRandomPassword();
 
-//       const defaultPassword = password;
-//       const hashedPassword = await hashPassword(password);
+      // create the user
+      const data = {
+        email,
+        password,
+      };
 
-//       // get the name of the organization with the id of organizationId
-//       const organization = await organizationService.findOrganizationById(
-//         organizationId
-//       );
+      const newUser = await userService.createUser(data);
 
-//       // create data for the user
-//       const data = {
-//         firstName,
-//         middleName,
-//         lastName,
-//         email,
-//         password: hashedPassword,
-//         userType: UserType.USER,
-//         isVerified: true,
-//         createdAt: new Date().toISOString(),
-//         updatedAt: new Date().toISOString(),
-//       };
+      const userId = newUser.id;
+      let mappedRole: any;
+      mappedRole = mapStringToEnum.mapStringToRole(res, role);
 
-//       const user = await userService.createUser(data);
-//       const userId = user.id;
+      await companyService.addUserToCompany(userId, companyId, mappedRole);
 
-//       // add the user to the organization
-//       const newUserOrganization = await userService.addUserToOrganization(
-//         userId,
-//         organizationId
-//       );
+      // generate email token
+      const emailData = {
+        email,
+        password,
+        companyName: company.name,
+        role: role,
+      };
 
-//       // get the updated user
-//       const updatedUser = await userService.updateUser(userId, {
-//         userOrganizations: {
-//           connect: { id: newUserOrganization.id },
-//         },
-//       });
+      // send email
+      const response = await sendEmails.sendInviteEmailToExistingUser(
+        emailData
+      );
 
-//       const emailData = {
-//         email: user.email,
-//         name: user.firstName,
-//         password: defaultPassword,
-//         organization: organization?.name,
-//       };
+      return responses.successResponse(res, 201, "User invited successfully");
+    } catch (error: any) {
+      return responses.errorResponse(res, 500, error.message);
+    }
+  }
+}
 
-//       // Send invitation email
-//       const response = await sendEmails.sendInviteEmail(emailData);
-
-//       if (response.status !== 200) {
-//         systemLog.systemError(response.message);
-//       }
-
-//       return responses.successResponse(
-//         res,
-//         200,
-//         "Invitation email sent successfully!",
-//         { user: updatedUser }
-//       );
-//     }
-//   } catch (error: any) {
-//     responses.errorResponse(res, 500, error.message);
-//   }
-// };
-
-// export default { inviteUser };
+export default new InviteUser();

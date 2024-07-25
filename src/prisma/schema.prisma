@@ -8,19 +8,31 @@ generator client {
 }
 
 model User {
-  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
-  email               String    @unique
+  id                  String        @id @default(auto()) @map("_id") @db.ObjectId
+  email               String        @unique
   password            String
   firstName           String
   middleName          String?
   lastName            String
-  isVerified          Boolean   @default(false)
+  isVerified          Boolean       @default(false)
   verificationToken   String?
   forgotPasswordToken String?
-  isActivated         Boolean   @default(false)
-  role                Role      @default(EMPLOYEE)
+  isActivated         Boolean       @default(false)
   createdAt           DateTime?
   updatedAt           DateTime?
+  userCompanies       UserCompany[]
+}
+
+model Company {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  description   String?
+  address       Address
+  phoneNumber   String
+  companyEmail  String        @unique
+  createdAt     DateTime?
+  updatedAt     DateTime?
+  userCompanies UserCompany[]
 }
 
 model Requisition {
@@ -62,6 +74,20 @@ model Transaction {
   updatedAt       DateTime?
 }
 
+model UserCompany {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @db.ObjectId
+  companyId String    @db.ObjectId
+  role      Role      @default(EMPLOYEE)
+  createdAt DateTime?
+  updatedAt DateTime?
+
+  user    User    @relation(fields: [userId], references: [id])
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@unique([userId, companyId])
+}
+
 enum RequisitionStatus {
   DRAFTS
   PENDING
@@ -78,4 +104,11 @@ enum Role {
   EMPLOYEE
   FINANCE
   ADMIN
+}
+
+type Address {
+  street  String?
+  city    String?
+  state   String?
+  country String?
 }
