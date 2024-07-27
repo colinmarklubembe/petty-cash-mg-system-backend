@@ -1,8 +1,13 @@
+import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import authRoutes from "./api/auth/routes/authRoutes";
-import { requisitionRouter, transactionRouter, fundRouter } from "./api/routes";
+import {
+  requisitionRouter,
+  transactionRouter,
+  fundRouter,
+  companyRouter,
+} from "./api/routes";
 
 dotenv.config();
 
@@ -24,6 +29,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/funds", fundRouter);
+app.use("/api/companies", companyRouter);
 app.use("/api/requisitions", requisitionRouter);
 app.use("/api/transactions", transactionRouter);
 

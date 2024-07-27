@@ -37,13 +37,13 @@ class Authenticate {
     res: Response,
     next: NextFunction
   ) => {
-    const companyId = req.headers["companyId"];
+    const companyId = req.headers["company-id"];
 
     if (!companyId) {
       return responses.errorResponse(
         res,
         400,
-        "comoanyId is required but was not found in the headers"
+        "companyId is required but was not found in the headers"
       );
     }
 

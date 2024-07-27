@@ -6,6 +6,13 @@ class UserService {
       where: {
         email,
       },
+      include: {
+        userCompanies: {
+          include: {
+            company: true,
+          },
+        },
+      },
     });
   }
 
@@ -30,6 +37,13 @@ class UserService {
     return prisma.user.findUnique({
       where: {
         id: userId,
+      },
+      include: {
+        userCompanies: {
+          include: {
+            company: true,
+          },
+        },
       },
     });
   }

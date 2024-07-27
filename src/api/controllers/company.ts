@@ -24,8 +24,10 @@ class CompanyController {
       const data = {
         name,
         address,
-        phone,
+        phoneNumber: phone,
         companyEmail,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       const company = await companyService.createCompany(data);
@@ -35,11 +37,13 @@ class CompanyController {
 
       await companyService.addUserToCompany(userId, companyId, role);
 
+      const updatedUser = await userService.findUserById(userId);
+
       return responses.successResponse(
         res,
         201,
         "Company created successfully",
-        company
+        { company: company, user: updatedUser }
       );
     } catch (error: any) {
       return responses.errorResponse(res, 500, error.message);
@@ -112,8 +116,9 @@ class CompanyController {
       const newData = {
         name,
         address,
-        phone,
+        phoneNumber: phone,
         companyEmail,
+        updatedAt: new Date().toISOString(),
       };
 
       const company = await companyService.updateCompany(companyId, newData);
@@ -261,6 +266,31 @@ class CompanyController {
       );
     } catch (error: any) {
       return responses.errorResponse(res, 500, error.message);
+    }
+  }
+
+  async selectCompany(req: Request, res: Response) {
+    try {
+      const { companyId } = req.params;
+
+      const company = await companyService.getCompany(companyId);
+
+      if (!company) {
+        return responses.errorResponse(res, 404, "Organization not found");
+      }
+
+      res.setHeader("companyId", `${company.id}`);
+
+      responses.successResponse(
+        res,
+        200,
+        `Organization ${company.name} selected successfully`,
+        {
+          company: company,
+        }
+      );
+    } catch (error: any) {
+      responses.errorResponse(res, 500, error.message);
     }
   }
 }

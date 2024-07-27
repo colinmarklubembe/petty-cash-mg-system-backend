@@ -1,6 +1,6 @@
 import prisma from "../../prisma/client";
 
-class CompantService {
+class CompanyService {
   async createCompany(data: any) {
     return await prisma.company.create({
       data,
@@ -11,7 +11,7 @@ class CompantService {
     return await prisma.company.findUnique({
       where: { id: companyId },
       include: {
-        users: true,
+        userCompanies: true,
       },
     });
   }
@@ -84,6 +84,15 @@ class CompantService {
       },
     });
   }
+
+  async findUserCompany(userId: string, companyId: string) {
+    return await prisma.userCompany.findFirst({
+      where: {
+        userId,
+        companyId,
+      },
+    });
+  }
 }
 
-export default new CompantService();
+export default new CompanyService();

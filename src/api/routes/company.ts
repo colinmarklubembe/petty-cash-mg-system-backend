@@ -13,6 +13,7 @@ router.post(
 router.get(
   "/get-company",
   authenticate.checkCompanyId,
+  authenticate.authenticateToken,
   companyController.getUserCompany
 );
 
@@ -25,6 +26,7 @@ router.get(
 router.put(
   "/update-company/:companyId",
   authenticate.authenticateToken,
+  authenticate.checkCompanyId,
   companyController.updateCompany
 );
 
@@ -51,5 +53,7 @@ router.delete(
   authenticate.checkCompanyId,
   companyController.removeUserFromCompany
 );
+
+router.get("/select-company/:companyId", companyController.selectCompany);
 
 export default router;

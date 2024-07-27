@@ -6,14 +6,14 @@ import {
   // verifyUserController,
   changePasswordController,
   forgotPasswordController,
-  // inviteUserController,
+  inviteUserController,
   updateProfileController,
   getUserController,
   deleteUserController,
 } from "../controllers";
 
 import {
-  // authenticate,
+  authenticate,
   checkMissingFields,
   loginLimiter,
 } from "../../middleware";
@@ -59,12 +59,12 @@ router.post(
   forgotPasswordController.forgotPassword
 );
 
-// router.post(
-//   "/invite-user",
-//   checkMissingFields(["firstName", "lastName", "email"]),
-//   authenticate.checkOrganizationId,
-//   inviteUserController.inviteUser
-// );
+router.post(
+  "/invite-user",
+  checkMissingFields(["firstName", "lastName", "email"]),
+  authenticate.checkCompanyId,
+  inviteUserController.inviteUser
+);
 
 router.put(
   "/update-profile/:id",

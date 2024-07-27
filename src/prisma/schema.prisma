@@ -75,12 +75,10 @@ model Transaction {
 }
 
 model UserCompany {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String    @db.ObjectId
-  companyId String    @db.ObjectId
-  role      Role      @default(EMPLOYEE)
-  createdAt DateTime?
-  updatedAt DateTime?
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String @db.ObjectId
+  companyId String @db.ObjectId
+  role      Role   @default(EMPLOYEE)
 
   user    User    @relation(fields: [userId], references: [id])
   company Company @relation(fields: [companyId], references: [id])

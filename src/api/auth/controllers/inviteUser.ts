@@ -14,80 +14,108 @@ interface AuthenticatedRequest extends Request {
 }
 
 class InviteUser {
-  async existingUser(req: AuthenticatedRequest, res: Response) {
-    try {
-      const { companyId } = req.company!;
-      const { email, role } = req.body;
+  existingUser = async (
+    companyId: string,
+    email: string,
+    role: string,
+    res: Response
+  ) => {
+    const user = await userService.findUserByEmail(email);
 
-      const user = await userService.findUserByEmail(email);
-
-      if (!user) {
-        return responses.errorResponse(res, 404, "User not found");
-      }
-
-      const userId = user.id;
-      let mappedRole: any;
-      mappedRole = mapStringToEnum.mapStringToRole(res, role);
-
-      await companyService.addUserToCompany(userId, companyId, mappedRole);
-
-      return responses.successResponse(res, 201, "User invited successfully");
-    } catch (error: any) {
-      return responses.errorResponse(res, 500, error.message);
+    if (!user) {
+      throw { status: 404, message: "User not found" };
     }
-  }
 
-  async newUser(req: AuthenticatedRequest, res: Response) {
+    const userId = user.id;
+    const mappedRole = mapStringToEnum.mapStringToRole(res, role);
+
+    // Check if user is already in the company
+    const userCompany = await companyService.getUserCompany(userId, companyId);
+
+    if (userCompany) {
+      throw { status: 400, message: "User already belongs to company" };
+    }
+
+    await companyService.addUserToCompany(userId, companyId, mappedRole);
+
+    return { status: 200, message: "User added successfully", data: user };
+  };
+
+  newUser = async (
+    companyId: string,
+    firstName: string,
+    lastName: string,
+    email: string,
+    role: string,
+    res: Response
+  ) => {
+    const company = await companyService.getCompany(companyId);
+
+    const password = generateRandomPassword();
+
+    const data = {
+      firstName,
+      lastName,
+      email,
+      password,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const newUser = await userService.createUser(data);
+
+    const userId = newUser.id;
+    const mappedRole = mapStringToEnum.mapStringToRole(res, role);
+
+    await companyService.addUserToCompany(userId, companyId, mappedRole);
+
+    const emailData = {
+      email,
+      password,
+      companyName: company.name,
+      role: role,
+    };
+
+    await sendEmails.sendInviteEmailToExistingUser(emailData);
+
+    return { status: 200, message: "User added successfully", data: newUser };
+  };
+
+  inviteUser = async (req: AuthenticatedRequest, res: Response) => {
+    const { email, role, firstName, lastName } = req.body;
+    const { companyId } = req.company!;
+
     try {
-      const { companyId } = req.company!;
-      const { email, role } = req.body;
-
       const user = await userService.findUserByEmail(email);
 
+      let response;
       if (user) {
-        return responses.errorResponse(
-          res,
-          404,
-          "User already exists in this company"
+        response = await this.existingUser(companyId, email, role, res);
+      } else {
+        response = await this.newUser(
+          companyId,
+          firstName,
+          lastName,
+          email,
+          role,
+          res
         );
       }
 
-      const company = await companyService.getCompany(companyId);
-
-      const password = generateRandomPassword();
-
-      // create the user
-      const data = {
-        email,
-        password,
-      };
-
-      const newUser = await userService.createUser(data);
-
-      const userId = newUser.id;
-      let mappedRole: any;
-      mappedRole = mapStringToEnum.mapStringToRole(res, role);
-
-      await companyService.addUserToCompany(userId, companyId, mappedRole);
-
-      // generate email token
-      const emailData = {
-        email,
-        password,
-        companyName: company.name,
-        role: role,
-      };
-
-      // send email
-      const response = await sendEmails.sendInviteEmailToExistingUser(
-        emailData
+      return responses.successResponse(
+        res,
+        response.status,
+        response.message,
+        response.data
       );
-
-      return responses.successResponse(res, 201, "User invited successfully");
     } catch (error: any) {
-      return responses.errorResponse(res, 500, error.message);
+      return responses.errorResponse(
+        res,
+        error.status || 500,
+        error.message || "An error occurred while inviting the user."
+      );
     }
-  }
+  };
 }
 
 export default new InviteUser();
