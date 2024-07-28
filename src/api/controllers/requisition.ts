@@ -1,16 +1,18 @@
-import { Request, response, Response } from "express";
+import { Request, Response } from "express";
 import { responses, mapStringToEnum } from "../../utils";
 import userService from "../auth/services/userService";
 import { requisitionService } from "../services";
 
 interface AuthenticatedRequest extends Request {
   user?: { email: string };
+  company?: { companyId: string };
 }
 
 class RequisitionController {
   async createRequisition(req: AuthenticatedRequest, res: Response) {
     try {
       const { email } = req.user!;
+      const { companyId } = req.company!;
       const { title, description, amount, pettyCashFundId } = req.body;
 
       const user = await userService.findUserByEmail(email);
@@ -22,6 +24,7 @@ class RequisitionController {
       const data = {
         title,
         amount,
+        companyId,
         description,
         pettyCashFundId,
         userId: user.id,
@@ -153,6 +156,7 @@ class RequisitionController {
   async getUserRequisitions(req: AuthenticatedRequest, res: Response) {
     try {
       const { email } = req.user!;
+      const { companyId } = req.company!;
 
       const user = await userService.findUserByEmail(email);
 
@@ -161,7 +165,8 @@ class RequisitionController {
       }
 
       const requisitions = await requisitionService.getUserRequisitions(
-        user.id
+        user.id,
+        companyId
       );
 
       return responses.successResponse(

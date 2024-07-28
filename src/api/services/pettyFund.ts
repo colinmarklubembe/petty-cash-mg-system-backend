@@ -23,10 +23,11 @@ class PettyCashFundService {
     });
   }
 
-  async getPettyCashFundByUserId(userId: string) {
+  async getPettyCashFundByUserId(userId: string, companyId: string) {
     return prisma.pettyCashFund.findMany({
       where: {
-        userId: userId,
+        userId,
+        companyId,
       },
       include: {
         requisitions: true,

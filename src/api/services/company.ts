@@ -12,6 +12,7 @@ class CompanyService {
       where: { id: companyId },
       include: {
         userCompanies: true,
+        pettyCashFunds: true,
       },
     });
   }

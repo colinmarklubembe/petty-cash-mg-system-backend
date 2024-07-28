@@ -27,9 +27,12 @@ class RequisitionService {
     return prisma.requisition.findMany();
   }
 
-  async getUserRequisitions(userId: string) {
+  async getUserRequisitions(userId: string, companyId: string) {
     return prisma.requisition.findMany({
-      where: { userId },
+      where: {
+        userId,
+        companyId,
+      },
     });
   }
 

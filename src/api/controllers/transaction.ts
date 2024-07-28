@@ -10,12 +10,14 @@ import userService from "../auth/services/userService";
 
 interface AuthenticatedRequest extends Request {
   user?: { email: string };
+  company?: { companyId: string };
 }
 
 class TransactionController {
   async create(req: AuthenticatedRequest, res: Response) {
     try {
       const { email } = req.user!;
+      const { companyId } = req.company!;
       const { amount, type, requisitionId } = req.body;
 
       const user = await userService.findUserByEmail(email);
@@ -57,6 +59,7 @@ class TransactionController {
           amount,
           type: mappedType,
           pettyCashFundId,
+          companyId,
           requisitionId,
           userId: user.id,
           createdAt: new Date().toISOString(),

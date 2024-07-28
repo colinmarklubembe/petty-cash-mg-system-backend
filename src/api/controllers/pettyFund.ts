@@ -5,12 +5,15 @@ import userService from "../auth/services/userService";
 
 interface AuthenticatedRequest extends Request {
   user?: { email: string };
+  company?: { companyId: string };
 }
 
 class PettyCashFundController {
   async createPettyCashFund(req: AuthenticatedRequest, res: Response) {
     try {
       const { email } = req.user!;
+      const { companyId } = req.company!;
+
       const { amount } = req.body;
 
       const user = await userService.findUserByEmail(email);
@@ -21,6 +24,7 @@ class PettyCashFundController {
 
       const data = {
         currentBalance: amount,
+        companyId,
         userId: user.id,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -103,6 +107,7 @@ class PettyCashFundController {
   async getAllPettyCashFunds(req: AuthenticatedRequest, res: Response) {
     try {
       const { email } = req.user!;
+      const { companyId } = req.company!;
 
       const user = await userService.findUserByEmail(email);
 
@@ -111,7 +116,8 @@ class PettyCashFundController {
       }
 
       const pettyCashFunds = await fundService.getPettyCashFundByUserId(
-        user.id
+        user.id,
+        companyId
       );
 
       return responses.successResponse(
@@ -149,6 +155,7 @@ class PettyCashFundController {
   async getPettyCashFundByUserId(req: AuthenticatedRequest, res: Response) {
     try {
       const { email } = req.user!;
+      const { companyId } = req.company!;
 
       const user = await userService.findUserByEmail(email);
 
@@ -157,7 +164,8 @@ class PettyCashFundController {
       }
 
       const pettyCashFunds = await fundService.getPettyCashFundByUserId(
-        user.id
+        user.id,
+        companyId
       );
 
       return responses.successResponse(
