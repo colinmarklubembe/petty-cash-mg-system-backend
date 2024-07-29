@@ -167,7 +167,7 @@ class CompanyController {
         res,
         200,
         "Companies retrieved successfully",
-        companies
+        { companies: companies }
       );
     } catch (error: any) {
       return responses.errorResponse(res, 500, error.message);

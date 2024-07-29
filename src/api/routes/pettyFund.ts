@@ -8,6 +8,7 @@ router.post(
   "/create",
   checkMissingFields(["amount"]),
   authenticate.authenticateToken,
+  authenticate.checkCompanyId,
   fundController.createPettyCashFund
 );
 
@@ -20,6 +21,7 @@ router.put(
 
 router.get(
   "/get-all",
+  authenticate.checkCompanyId,
   authenticate.authenticateToken,
   fundController.getAllPettyCashFunds
 );
