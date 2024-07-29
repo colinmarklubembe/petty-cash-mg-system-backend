@@ -35,4 +35,11 @@ router.get(
   requisitionController.getUserRequisitions
 );
 
+router.put(
+  "/approvals/approve/:requisitionId",
+  authenticate.authenticateToken,
+  authenticate.checkCompanyId,
+  requisitionController.approveRequisition
+);
+
 export default router;
