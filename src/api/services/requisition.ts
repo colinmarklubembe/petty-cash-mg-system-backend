@@ -23,8 +23,15 @@ class RequisitionService {
     });
   }
 
-  async getAllRequisitions() {
-    return prisma.requisition.findMany();
+  async getAllRequisitions(companyId: string) {
+    return prisma.requisition.findMany({
+      where: {
+        companyId,
+      },
+      include: {
+        pettyCashFund: true,
+      },
+    });
   }
 
   async getUserRequisitions(userId: string, companyId: string) {

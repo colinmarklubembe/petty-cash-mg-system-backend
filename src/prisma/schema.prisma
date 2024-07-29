@@ -44,6 +44,7 @@ model Requisition {
   amount            Float
   requisitionStatus RequisitionStatus @default(DRAFTS)
   pettyCashFundId   String            @db.ObjectId
+  companyId         String            @db.ObjectId
   pettyCashFund     PettyCashFund     @relation(fields: [pettyCashFundId], references: [id])
   transactions      Transaction[]
   createdAt         DateTime?
@@ -52,6 +53,7 @@ model Requisition {
 
 model PettyCashFund {
   id             String        @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
   currentBalance Float
   totalSpent     Float?
   totalAdded     Float?

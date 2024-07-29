@@ -6,7 +6,7 @@ const router = Router();
 
 router.post(
   "/create",
-  checkMissingFields(["amount"]),
+  checkMissingFields(["name", "amount"]),
   authenticate.authenticateToken,
   authenticate.checkCompanyId,
   fundController.createPettyCashFund

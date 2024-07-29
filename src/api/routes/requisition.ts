@@ -7,6 +7,7 @@ const router = Router();
 router.post(
   "/create",
   authenticate.authenticateToken,
+  authenticate.checkCompanyId,
   requisitionController.createRequisition
 );
 
@@ -16,7 +17,11 @@ router.put(
   requisitionController.updateRequisition
 );
 
-router.get("/all", requisitionController.getAllRequisitions);
+router.get(
+  "/all",
+  authenticate.checkCompanyId,
+  requisitionController.getAllRequisitions
+);
 
 router.get(
   "/get-requisition/:requisitionId",

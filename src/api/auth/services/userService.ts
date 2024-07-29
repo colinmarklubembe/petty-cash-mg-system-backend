@@ -16,6 +16,15 @@ class UserService {
     });
   }
 
+  async findUserCompany(userId: string, companyId: string) {
+    return prisma.userCompany.findFirst({
+      where: {
+        userId,
+        companyId,
+      },
+    });
+  }
+
   async createUser(data: any) {
     return prisma.user.create({
       data,

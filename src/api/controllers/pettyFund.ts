@@ -14,7 +14,7 @@ class PettyCashFundController {
       const { email } = req.user!;
       const { companyId } = req.company!;
 
-      const { amount } = req.body;
+      const { name, amount } = req.body;
 
       const user = await userService.findUserByEmail(email);
 
@@ -23,6 +23,7 @@ class PettyCashFundController {
       }
 
       const data = {
+        name: name,
         currentBalance: amount,
         companyId,
         userId: user.id,
@@ -47,7 +48,7 @@ class PettyCashFundController {
     try {
       const { email } = req.user!;
       const { fundId } = req.params;
-      const { amount } = req.body;
+      const { name, amount } = req.body;
 
       const user = await userService.findUserByEmail(email);
 
@@ -62,6 +63,7 @@ class PettyCashFundController {
       }
 
       const newData = {
+        name: name,
         currentBalance: amount,
         updatedAt: new Date().toISOString(),
       };
