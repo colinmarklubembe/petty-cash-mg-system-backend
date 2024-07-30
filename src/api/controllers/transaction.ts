@@ -108,6 +108,7 @@ class TransactionController {
         amount,
         type: mappedType,
         pettyCashFundId,
+        companyId,
         requisitionId,
         userId: user.id,
         createdAt: new Date().toISOString(),
@@ -243,6 +244,25 @@ class TransactionController {
 
       const transactions = await transactionService.getTransactionsByUserId(
         user.id
+      );
+
+      return responses.successResponse(
+        res,
+        200,
+        "Transactions retrieved successfully",
+        { transactions }
+      );
+    } catch (error: any) {
+      return responses.errorResponse(res, 500, error.message);
+    }
+  }
+
+  async getAllTransactions(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { companyId } = req.company!;
+
+      const transactions = await transactionService.getAllTransactions(
+        companyId
       );
 
       return responses.successResponse(

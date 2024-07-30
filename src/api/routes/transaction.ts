@@ -7,6 +7,7 @@ const router = Router();
 router.post(
   "/create-transaction",
   authenticate.authenticateToken,
+  authenticate.checkCompanyId,
   transactionController.create
 );
 
@@ -26,6 +27,12 @@ router.get(
   "/get-transactions",
   authenticate.authenticateToken,
   transactionController.getTransactions
+);
+
+router.get(
+  "/all",
+  authenticate.checkCompanyId,
+  transactionController.getAllTransactions
 );
 
 router.get(

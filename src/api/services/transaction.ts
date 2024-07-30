@@ -1,4 +1,5 @@
 import prisma from "../../prisma/client";
+import requisition from "./requisition";
 
 class TransactionService {
   async getTransactions() {
@@ -44,6 +45,19 @@ class TransactionService {
     return prisma.transaction.findMany({
       where: {
         userId,
+      },
+    });
+  }
+
+  async getAllTransactions(companyId: string) {
+    return prisma.transaction.findMany({
+      where: {
+        companyId,
+      },
+      include: {
+        user: true,
+        requisition: true,
+        pettyCashFund: true,
       },
     });
   }

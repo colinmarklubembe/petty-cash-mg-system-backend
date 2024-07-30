@@ -21,6 +21,7 @@ model User {
   createdAt           DateTime?
   updatedAt           DateTime?
   userCompanies       UserCompany[]
+  transactions        Transaction[]
 }
 
 model Company {
@@ -34,6 +35,7 @@ model Company {
   updatedAt      DateTime?
   userCompanies  UserCompany[]
   pettyCashFunds PettyCashFund[]
+  transactions   Transaction[]
 }
 
 model Requisition {
@@ -75,6 +77,8 @@ model Transaction {
   requisitionId   String          @db.ObjectId
   companyId       String          @db.ObjectId
   requisition     Requisition     @relation(fields: [requisitionId], references: [id])
+  company         Company         @relation(fields: [companyId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
   pettyCashFund   PettyCashFund   @relation(fields: [pettyCashFundId], references: [id])
   createdAt       DateTime?
   updatedAt       DateTime?
