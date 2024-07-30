@@ -42,4 +42,11 @@ router.put(
   requisitionController.approveRequisition
 );
 
+router.put(
+  "/approvals/reject/:requisitionId",
+  authenticate.authenticateToken,
+  authenticate.checkCompanyId,
+  requisitionController.rejectRequisition
+);
+
 export default router;
