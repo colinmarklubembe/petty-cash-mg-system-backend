@@ -18,6 +18,7 @@ model User {
   verificationToken   String?
   forgotPasswordToken String?
   isActivated         Boolean       @default(false)
+  phoneNumber         String?
   createdAt           DateTime?
   updatedAt           DateTime?
   userCompanies       UserCompany[]
