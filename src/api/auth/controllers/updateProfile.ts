@@ -8,7 +8,7 @@ interface AuthenticatedRequest extends Request {
 
 const updateProfile = async (req: AuthenticatedRequest, res: Response) => {
   const { email } = req.user!;
-  const { firstName, middleName, lastName } = req.body;
+  const { firstName, middleName, lastName, phoneNumber } = req.body;
 
   try {
     const user = await userService.findUserByEmail(email);
@@ -23,6 +23,7 @@ const updateProfile = async (req: AuthenticatedRequest, res: Response) => {
       firstName,
       middleName,
       lastName,
+      phoneNumber,
       updatedAt: new Date().toISOString(),
     };
 
