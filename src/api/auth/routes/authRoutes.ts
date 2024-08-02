@@ -42,8 +42,9 @@ router.post(
 );
 
 router.put(
-  "/change-password/:id",
+  "/change-password",
   checkMissingFields(["oldPassword", "newPassword"]),
+  authenticate.authenticateToken,
   changePasswordController.changePassword
 );
 
