@@ -70,6 +70,7 @@ router.post(
 router.put(
   "/update-profile/:id",
   checkMissingFields(["firstName", "lastName"]),
+  authenticate.authenticateToken,
   updateProfileController.updateProfile
 );
 
