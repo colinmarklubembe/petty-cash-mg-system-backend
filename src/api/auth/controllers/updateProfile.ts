@@ -2,12 +2,16 @@ import { Request, Response } from "express";
 import { sendEmails, responses } from "../../../utils";
 import userService from "../services/userService";
 
-const updateProfile = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { firstName, middleName, lastName, email } = req.body;
+interface AuthenticatedRequest extends Request {
+  user?: { email: string };
+}
+
+const updateProfile = async (req: AuthenticatedRequest, res: Response) => {
+  const { email } = req.user!;
+  const { firstName, middleName, lastName } = req.body;
 
   try {
-    const user = await userService.findUserById(id);
+    const user = await userService.findUserByEmail(email);
 
     if (!user) {
       return responses.errorResponse(res, 404, "User not found");
@@ -19,7 +23,6 @@ const updateProfile = async (req: Request, res: Response) => {
       firstName,
       middleName,
       lastName,
-      email,
       updatedAt: new Date().toISOString(),
     };
 

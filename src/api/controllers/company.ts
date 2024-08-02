@@ -174,23 +174,6 @@ class CompanyController {
     }
   }
 
-  async getCompanyUsers(req: AuthenticatedRequest, res: Response) {
-    try {
-      const { companyId } = req.company!;
-
-      const users = await companyService.getCompanyUsers(companyId);
-
-      return responses.successResponse(
-        res,
-        200,
-        "Company users retrieved successfully",
-        users
-      );
-    } catch (error: any) {
-      return responses.errorResponse(res, 500, error.message);
-    }
-  }
-
   async addUserToCompany(req: AuthenticatedRequest, res: Response) {
     try {
       const { companyId } = req.company!;

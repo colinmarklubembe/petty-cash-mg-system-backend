@@ -77,6 +77,12 @@ router.get("/get-user/:id", getUserController.getUserById);
 
 router.get("/get-users", getUserController.getAllUsers);
 
+router.get(
+  "/get-company-users",
+  authenticate.checkCompanyId,
+  getUserController.getCompanyUsers
+);
+
 router.delete("/delete-user/:id", deleteUserController.deleteUser);
 
 export default router;

@@ -42,12 +42,6 @@ router.get(
   companyController.getUserCompanies
 );
 
-router.get(
-  "/get-company-users",
-  authenticate.checkCompanyId,
-  companyController.getCompanyUsers
-);
-
 router.delete(
   "/company/remove-user",
   authenticate.checkCompanyId,
