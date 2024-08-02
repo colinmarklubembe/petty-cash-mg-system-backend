@@ -69,11 +69,13 @@ router.post(
 
 router.put(
   "/update-profile/:id",
-  checkMissingFields(["firstName", "lastName", "email"]),
+  checkMissingFields(["firstName", "lastName"]),
   updateProfileController.updateProfile
 );
 
 router.get("/get-user/:id", getUserController.getUserById);
+
+router.get("/user", authenticate.authenticateToken, getUserController.getUser);
 
 router.get("/get-users", getUserController.getAllUsers);
 

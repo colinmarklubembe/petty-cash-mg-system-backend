@@ -5,6 +5,7 @@ import userService from "../../auth/services/userService";
 
 interface AuthenticatedRequest extends Request {
   company?: { companyId: string };
+  user?: { email: string };
 }
 
 class GetUserController {
@@ -38,6 +39,21 @@ class GetUserController {
       responses.errorResponse(res, 500, error.message);
     }
   };
+
+  async getUser(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { email } = req.user!;
+      const user = await userService.findUserByEmail(email);
+
+      if (!user) {
+        return responses.errorResponse(res, 404, "User not found");
+      }
+
+      responses.successResponse(res, 200, "User:", user);
+    } catch (error: any) {
+      responses.errorResponse(res, 500, error.message);
+    }
+  }
 
   async getCompanyUsers(req: AuthenticatedRequest, res: Response) {
     try {
