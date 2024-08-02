@@ -3,12 +3,16 @@ import { hashPassword, checkPasswordStrength, responses } from "../../../utils";
 import userService from "../services/userService";
 import bcryptjs from "bcryptjs";
 
-const changePassword = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { oldPassword, newPassword } = req.body;
+interface AuthenticatedRequest extends Request {
+  user?: { email: string };
+}
 
+const changePassword = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const user = await userService.findUserById(id);
+    const { email } = req.user!;
+    const { oldPassword, newPassword } = req.body;
+
+    const user = await userService.findUserByEmail(email);
 
     if (!user) {
       return responses.errorResponse(res, 404, "User does not exist");
@@ -37,7 +41,7 @@ const changePassword = async (req: Request, res: Response) => {
     // hash new password
     const hashedPassword = await hashPassword(password);
 
-    const userId = id;
+    const userId = user.id;
 
     const newData = {
       password: hashedPassword,
