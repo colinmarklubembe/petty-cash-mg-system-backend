@@ -45,7 +45,7 @@ model Requisition {
   userId            String            @db.ObjectId
   description       String?
   amount            Float
-  requisitionStatus RequisitionStatus @default(DRAFTS)
+  requisitionStatus RequisitionStatus @default(PENDING)
   pettyCashFundId   String            @db.ObjectId
   companyId         String            @db.ObjectId
   pettyCashFund     PettyCashFund     @relation(fields: [pettyCashFundId], references: [id])

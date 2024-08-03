@@ -49,4 +49,10 @@ router.put(
   requisitionController.rejectRequisition
 );
 
+router.put(
+  "/approvals/stall/:requisitionId",
+  authenticate.authenticateToken,
+  requisitionController.stallRequisition
+);
+
 export default router;

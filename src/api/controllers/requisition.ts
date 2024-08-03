@@ -50,7 +50,7 @@ class RequisitionController {
     try {
       const { email } = req.user!;
       const { requisitionId } = req.params;
-      const { title, description, amount, status } = req.body;
+      const { title, description, amount } = req.body;
 
       const user = await userService.findUserByEmail(email);
 
@@ -74,14 +74,11 @@ class RequisitionController {
         );
       }
 
-      let mappedStatus: any;
-      mappedStatus = mapStringToEnum.mapStringToRequisitionStatus(res, status);
-
       const newData = {
         title,
         description,
         amount,
-        requisitionStatus: mappedStatus,
+        requisitionStatus: RequisitionStatus.PENDING,
         updatedAt: new Date().toISOString(),
       };
 
@@ -293,6 +290,64 @@ class RequisitionController {
         res,
         200,
         "Requisition rejected successfully",
+        { requisition: updatedRequisition }
+      );
+    } catch (error: any) {
+      return responses.errorResponse(res, 500, error.message);
+    }
+  }
+
+  async stallRequisition(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { email } = req.user!;
+      const { companyId } = req.company!;
+      const { requisitionId } = req.params;
+
+      const user = await userService.findUserByEmail(email);
+
+      if (!user) {
+        return responses.errorResponse(res, 404, "User not found");
+      }
+
+      const userCompany = await userService.findUserCompany(user.id, companyId);
+
+      if (!userCompany) {
+        return responses.errorResponse(res, 403, "User not found in company");
+      }
+
+      if (
+        userCompany.role !== Role.ADMIN &&
+        userCompany.role !== Role.FINANCE
+      ) {
+        return responses.errorResponse(
+          res,
+          403,
+          "You are not allowed to stall requisitions"
+        );
+      }
+
+      const requisition = await requisitionService.findRequisitionById(
+        requisitionId
+      );
+
+      if (!requisition) {
+        return responses.errorResponse(res, 404, "Requisition not found");
+      }
+
+      const newData = {
+        requisitionStatus: RequisitionStatus.DRAFTS,
+        updatedAt: new Date().toISOString(),
+      };
+
+      const updatedRequisition = await requisitionService.updateRequisition(
+        requisitionId,
+        newData
+      );
+
+      return responses.successResponse(
+        res,
+        200,
+        "Requisition stalled successfully",
         { requisition: updatedRequisition }
       );
     } catch (error: any) {
