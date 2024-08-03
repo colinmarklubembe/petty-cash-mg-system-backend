@@ -51,6 +51,7 @@ router.put(
 
 router.put(
   "/approvals/stall/:requisitionId",
+  authenticate.checkCompanyId,
   authenticate.authenticateToken,
   requisitionController.stallRequisition
 );
