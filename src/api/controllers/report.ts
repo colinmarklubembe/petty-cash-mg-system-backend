@@ -1,16 +1,18 @@
 import { Request, Response } from "express";
 import { responses } from "../../utils";
 import userService from "../auth/services/userService";
+import { companyService, reportService } from "../services";
 
 interface AuthenticatedRequest extends Request {
   user?: { email: string };
+  company?: { companyId: string };
 }
 
 class ReportController {
-  async generateReport(req: AuthenticatedRequest, res: Response) {
+  async generateUserReport(req: AuthenticatedRequest, res: Response) {
     try {
       const { email } = req.user!;
-      const { reportType } = req.params;
+      const { companyId } = req.company!;
 
       const user = await userService.findUserByEmail(email);
 
@@ -18,12 +20,22 @@ class ReportController {
         return responses.errorResponse(res, 404, "User not found");
       }
 
-      // Generate report based on the report type
+      const company = await companyService.getCompany(companyId);
+
+      if (!company) {
+        return responses.errorResponse(res, 404, "Company not found");
+      }
+
+      const userReport = await reportService.generateUserReport(
+        user.id,
+        companyId
+      );
+
       return responses.successResponse(
         res,
         200,
         "Report generated successfully",
-        { reportType }
+        { user: user, company: company }
       );
     } catch (error: any) {
       return responses.errorResponse(res, 500, error.message);
