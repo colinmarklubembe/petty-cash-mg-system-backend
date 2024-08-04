@@ -1,4 +1,4 @@
-import { requisitionService } from "../services";
+import { requisitionService, transactionService } from "../services";
 import prisma from "../../prisma/client";
 
 class ReportService {
@@ -16,10 +16,23 @@ class ReportService {
       };
     }
 
+    const userMonthlyTransactions = await this.calculateUserMonthlyTransactions(
+      userId,
+      companyId,
+      date
+    );
+
+    if (userMonthlyTransactions.status !== 200) {
+      return {
+        status: userMonthlyTransactions.status,
+        message: userMonthlyTransactions.message,
+      };
+    }
     return {
       status: 200,
       data: {
         userMonthlyRequisitions: userMonthlyRequisitions.data,
+        userMonthlyTransactions: userMonthlyTransactions.data,
       },
     };
   }
@@ -33,7 +46,6 @@ class ReportService {
       userId,
       companyId
     );
-    console.log(requisitionsByMonth);
 
     if (requisitionsByMonth.status !== 200) {
       return {
@@ -73,7 +85,45 @@ class ReportService {
     userId: string,
     companyId: string,
     date: any
-  ) {}
+  ) {
+    const transactionsByMonth = await this.getUserTransactionsByMonth(
+      userId,
+      companyId
+    );
+
+    if (transactionsByMonth.status !== 200) {
+      return {
+        status: transactionsByMonth.status,
+        message: transactionsByMonth.message,
+      };
+    }
+
+    const currentMonth = date
+      ? new Date(date).getMonth() + 1
+      : new Date().getMonth() + 1;
+
+    const currentYear = date
+      ? new Date(date).getFullYear()
+      : new Date().getFullYear();
+
+    const key = `${currentMonth}-${currentYear}`;
+    const currentMonthTransactions = transactionsByMonth.data?.[key] || {
+      month: currentMonth,
+      year: currentYear,
+      requisitions: [],
+    };
+
+    const totalMonthlyTransactions =
+      currentMonthTransactions.transactions.length;
+
+    return {
+      status: 200,
+      data: {
+        currentMonthTransactions: currentMonthTransactions,
+        totalMonthlyRequisitions: totalMonthlyTransactions,
+      },
+    };
+  }
 
   async getUserRequisitionsByMonth(userId: string, companyId: string) {
     const requisitions = await requisitionService.getRequisitionsByMonth(
@@ -112,6 +162,45 @@ class ReportService {
     });
 
     return { status: 200, data: userMonthlyRequisitions };
+  }
+
+  async getUserTransactionsByMonth(userId: string, companyId: string) {
+    const transactions = await transactionService.getTransactionsByMonth(
+      userId,
+      companyId
+    );
+
+    if (!transactions || transactions.length === 0) {
+      return { status: 400, message: "No transactions found for this user!" };
+    }
+
+    const currentYear = new Date().getFullYear();
+
+    const userTransactions = transactions.filter(
+      (transaction: any) =>
+        transaction.userId === userId &&
+        new Date(transaction.createdAt).getFullYear() === currentYear
+    );
+
+    const userMonthlyTransactions: { [key: string]: any } = {};
+    for (let month = 1; month <= 12; month++) {
+      const key = `${month}-${currentYear}`;
+      userMonthlyTransactions[key] = {
+        month: month,
+        year: currentYear,
+        transactions: [],
+      };
+    }
+
+    userTransactions.forEach((transaction: any) => {
+      const month = new Date(transaction.createdAt).getMonth() + 1;
+      const key = `${month}-${currentYear}`;
+      if (userMonthlyTransactions[key]) {
+        userMonthlyTransactions[key].transactions.push(transaction);
+      }
+    });
+
+    return { status: 200, data: userMonthlyTransactions };
   }
 }
 

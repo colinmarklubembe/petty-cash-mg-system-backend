@@ -61,6 +61,15 @@ class TransactionService {
       },
     });
   }
+
+  async getTransactionsByMonth(userId: string, companyId: string) {
+    return prisma.transaction.findMany({
+      where: {
+        userId,
+        companyId,
+      },
+    });
+  }
 }
 
 export default new TransactionService();

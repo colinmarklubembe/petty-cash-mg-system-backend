@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { responses, mapStringToEnum } from "../../utils";
 import userService from "../auth/services/userService";
-import { requisitionService } from "../services";
+import { fundService, requisitionService } from "../services";
 import { RequisitionStatus, Role } from "@prisma/client";
 
 interface AuthenticatedRequest extends Request {
@@ -20,6 +20,22 @@ class RequisitionController {
 
       if (!user) {
         return responses.errorResponse(res, 404, "User not found");
+      }
+
+      const pettyCashFund = await fundService.getPettyCashFundById(
+        pettyCashFundId
+      );
+
+      if (!pettyCashFund) {
+        return responses.errorResponse(res, 404, "Petty cash fund not found");
+      }
+
+      if (amount > pettyCashFund.currentBalance) {
+        return responses.errorResponse(
+          res,
+          400,
+          `Amount requested exceeds current balance for fund ${pettyCashFund.name}`
+        );
       }
 
       const data = {
