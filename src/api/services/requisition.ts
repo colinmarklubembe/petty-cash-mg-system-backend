@@ -50,6 +50,15 @@ class RequisitionService {
       }),
     ]);
   }
+
+  async getRequisitionsByMonth(userId: string, companyId: string) {
+    return prisma.requisition.findMany({
+      where: {
+        userId,
+        companyId,
+      },
+    });
+  }
 }
 
 export default new RequisitionService();

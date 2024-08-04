@@ -11,10 +11,15 @@ interface AuthenticatedRequest extends Request {
 class ReportController {
   async generateUserReport(req: AuthenticatedRequest, res: Response) {
     try {
-      const { email } = req.user!;
+      const { userId } = req.params;
       const { companyId } = req.company!;
+      const { selectedDate } = req.query as any;
 
-      const user = await userService.findUserByEmail(email);
+      const date = selectedDate
+        ? new Date(selectedDate).toISOString()
+        : new Date().toISOString();
+
+      const user = await userService.findUserById(userId);
 
       if (!user) {
         return responses.errorResponse(res, 404, "User not found");
@@ -27,15 +32,24 @@ class ReportController {
       }
 
       const userReport = await reportService.generateUserReport(
-        user.id,
-        companyId
+        userId,
+        companyId,
+        date
       );
+
+      if (userReport.status !== 200) {
+        return responses.errorResponse(
+          res,
+          userReport.status,
+          userReport.message
+        );
+      }
 
       return responses.successResponse(
         res,
         200,
         "Report generated successfully",
-        { user: user, company: company }
+        { user: user, report: userReport.data }
       );
     } catch (error: any) {
       return responses.errorResponse(res, 500, error.message);

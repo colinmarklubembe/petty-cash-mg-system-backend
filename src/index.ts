@@ -7,6 +7,7 @@ import {
   transactionRouter,
   fundRouter,
   companyRouter,
+  reportRouter,
 } from "./api/routes";
 
 dotenv.config();
@@ -29,6 +30,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/funds", fundRouter);
+app.use("/api/reports", reportRouter);
 app.use("/api/companies", companyRouter);
 app.use("/api/requisitions", requisitionRouter);
 app.use("/api/transactions", transactionRouter);
