@@ -110,8 +110,37 @@ class CompanyController {
 
   async updateCompany(req: AuthenticatedRequest, res: Response) {
     try {
-      const { companyId } = req.company!;
+      const { email } = req.user!;
+      const { companyId } = req.params!;
       const { name, address, phone, companyEmail } = req.body;
+
+      const user = await userService.findUserByEmail(email);
+
+      if (!user) {
+        return responses.errorResponse(res, 404, "User not found");
+      }
+
+      // get user company
+      const userCompany = await companyService.getUserCompany(
+        user.id,
+        companyId
+      );
+
+      if (!userCompany) {
+        return responses.errorResponse(
+          res,
+          404,
+          "User does not belong to company"
+        );
+      }
+
+      if (userCompany.role !== Role.ADMIN) {
+        return responses.errorResponse(
+          res,
+          403,
+          "Only the company admin can update company details"
+        );
+      }
 
       const newData = {
         name,

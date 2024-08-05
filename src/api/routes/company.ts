@@ -26,7 +26,6 @@ router.get(
 router.put(
   "/update-company/:companyId",
   authenticate.authenticateToken,
-  authenticate.checkCompanyId,
   companyController.updateCompany
 );
 
