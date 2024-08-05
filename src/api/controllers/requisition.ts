@@ -90,6 +90,24 @@ class RequisitionController {
         );
       }
 
+      const pettyCashFund = await fundService.getPettyCashFundById(
+        requisition.pettyCashFundId
+      );
+
+      if (!pettyCashFund) {
+        return responses.errorResponse(res, 404, "Petty cash fund not found");
+      }
+
+      if (amount) {
+        if (amount > pettyCashFund.currentBalance) {
+          return responses.errorResponse(
+            res,
+            400,
+            `Amount requested exceeds current balance for fund ${pettyCashFund.name}`
+          );
+        }
+      }
+
       const newData = {
         title,
         description,
