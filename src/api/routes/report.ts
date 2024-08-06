@@ -10,4 +10,10 @@ router.get(
   reportController.generateUserReport
 );
 
+router.get(
+  "/company",
+  authenticate.checkCompanyId,
+  reportController.generateCompanyReport
+);
+
 export default router;

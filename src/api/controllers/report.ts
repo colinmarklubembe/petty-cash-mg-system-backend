@@ -55,6 +55,45 @@ class ReportController {
       return responses.errorResponse(res, 500, error.message);
     }
   }
+
+  async generateCompanyReport(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { companyId } = req.company!;
+      const { selectedDate } = req.query as any;
+
+      const date = selectedDate
+        ? new Date(selectedDate).toISOString()
+        : new Date().toISOString();
+
+      const company = await companyService.getCompany(companyId);
+
+      if (!company) {
+        return responses.errorResponse(res, 404, "Company not found");
+      }
+
+      const companyReport = await reportService.generateCompanyReport(
+        companyId,
+        date
+      );
+
+      if (companyReport.status !== 200) {
+        return responses.errorResponse(
+          res,
+          companyReport.status,
+          companyReport.message
+        );
+      }
+
+      return responses.successResponse(
+        res,
+        200,
+        "Report generated successfully",
+        { company: company, report: companyReport.data }
+      );
+    } catch (error: any) {
+      return responses.errorResponse(res, 500, error.message);
+    }
+  }
 }
 
 export default new ReportController();

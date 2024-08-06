@@ -51,10 +51,18 @@ class RequisitionService {
     ]);
   }
 
-  async getRequisitionsByMonth(userId: string, companyId: string) {
+  async getUserRequisitionsByMonth(userId: string, companyId: string) {
     return prisma.requisition.findMany({
       where: {
         userId,
+        companyId,
+      },
+    });
+  }
+
+  async getRequisitionsByMonth(companyId: string) {
+    return prisma.requisition.findMany({
+      where: {
         companyId,
       },
     });
