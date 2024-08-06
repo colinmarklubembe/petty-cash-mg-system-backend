@@ -231,7 +231,7 @@ class ReportService {
       status: 200,
       data: {
         currentMonthTransactions: currentMonthTransactions,
-        totalMonthlyRequisitions: totalMonthlyTransactions,
+        totalMonthlyTransactions: totalMonthlyTransactions,
       },
     };
   }
