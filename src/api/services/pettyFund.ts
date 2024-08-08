@@ -48,7 +48,7 @@ class PettyCashFundService {
   }
 
   async deletePettyCashFund(fundId: string) {
-    return prisma.pettyCashFund.$transaction([
+    return prisma.$transaction([
       prisma.requisition.deleteMany({
         where: {
           fundId: fundId,
