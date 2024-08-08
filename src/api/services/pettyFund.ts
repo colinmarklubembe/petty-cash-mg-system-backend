@@ -51,7 +51,7 @@ class PettyCashFundService {
     return prisma.$transaction([
       prisma.requisition.deleteMany({
         where: {
-          fundId: fundId,
+          pettyCashFundId: fundId,
         },
       }),
       prisma.pettyCashFund.delete({
