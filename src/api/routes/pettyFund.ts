@@ -40,6 +40,7 @@ router.get(
 
 router.delete(
   "/delete/:fundId",
+  authenticate.checkCompanyId,
   authenticate.authenticateToken,
   fundController.deletePettyCashFund
 );

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { responses } from "../../utils";
 import { fundService } from "../services";
 import userService from "../auth/services/userService";
+import { Role } from "@prisma/client";
 
 interface AuthenticatedRequest extends Request {
   user?: { email: string };
@@ -87,6 +88,31 @@ class PettyCashFundController {
   async deletePettyCashFund(req: AuthenticatedRequest, res: Response) {
     try {
       const { fundId } = req.params;
+      const { email } = req.user!;
+      const { companyId } = req.company!;
+
+      const user = await userService.findUserByEmail(email);
+
+      if (!user) {
+        return responses.errorResponse(res, 404, "User not found");
+      }
+
+      const userCompany = await userService.findUserCompany(user.id, companyId);
+
+      if (!userCompany) {
+        return responses.errorResponse(res, 403, "User not found in company");
+      }
+
+      if (
+        userCompany.role !== Role.ADMIN &&
+        userCompany.role !== Role.FINANCE
+      ) {
+        return responses.errorResponse(
+          res,
+          403,
+          "You are not allowed to delete cash funds"
+        );
+      }
 
       const pettyCashFund = await fundService.getPettyCashFundById(fundId);
 
