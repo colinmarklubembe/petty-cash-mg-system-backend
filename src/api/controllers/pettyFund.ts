@@ -94,7 +94,7 @@ class PettyCashFundController {
         return responses.errorResponse(res, 404, "Petty cash fund not found");
       }
 
-      await fundService.deletePettyCashFund(parseInt(fundId));
+      await fundService.deletePettyCashFund(fundId);
 
       return responses.successResponse(
         res,
