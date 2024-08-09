@@ -246,15 +246,13 @@ class CompanyController {
   async removeUserFromCompany(req: AuthenticatedRequest, res: Response) {
     try {
       const { companyId } = req.company!;
-      const { email } = req.body;
+      const { userId } = req.params;
 
-      const user = await userService.findUserByEmail(email);
+      const user = await userService.findUserById(userId);
 
       if (!user) {
         return responses.errorResponse(res, 404, "User not found");
       }
-
-      const userId = user.id;
 
       const userCompany = await companyService.getUserCompany(
         userId,

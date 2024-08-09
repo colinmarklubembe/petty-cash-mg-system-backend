@@ -42,7 +42,7 @@ router.get(
 );
 
 router.delete(
-  "/company/remove-user",
+  "/company/remove-user/:userId",
   authenticate.checkCompanyId,
   companyController.removeUserFromCompany
 );
