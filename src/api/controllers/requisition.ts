@@ -389,8 +389,30 @@ class RequisitionController {
     }
   }
 
-  async deleteRequisition(req: Request, res: Response) {
+  async deleteRequisition(req: AuthenticatedRequest, res: Response) {
     const { requisitionId } = req.params;
+    const { email } = req.user!;
+    const { companyId } = req.company!;
+
+    const user = await userService.findUserByEmail(email);
+
+    if (!user) {
+      return responses.errorResponse(res, 404, "User not found");
+    }
+
+    const userCompany = await userService.findUserCompany(user.id, companyId);
+
+    if (!userCompany) {
+      return responses.errorResponse(res, 403, "User not found in company");
+    }
+
+    if (userCompany.role !== Role.ADMIN && userCompany.role !== Role.FINANCE) {
+      return responses.errorResponse(
+        res,
+        403,
+        "You are not allowed to delete Requisitions"
+      );
+    }
 
     const requisition = await requisitionService.findRequisitionById(
       requisitionId
@@ -398,6 +420,14 @@ class RequisitionController {
 
     if (!requisition) {
       return responses.errorResponse(res, 404, "Requisition not found");
+    }
+
+    if (requisition.transactions.length > 0) {
+      return responses.errorResponse(
+        res,
+        400,
+        `Unable to delete this requisition as it already has ${requisition.transactions.length} transactions attached to it!`
+      );
     }
 
     await requisitionService.deleteRequisition(requisitionId);

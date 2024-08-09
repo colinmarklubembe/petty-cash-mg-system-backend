@@ -120,6 +120,17 @@ class PettyCashFundController {
         return responses.errorResponse(res, 404, "Petty cash fund not found");
       }
 
+      if (
+        pettyCashFund.transactions.length > 0 ||
+        pettyCashFund.requisitions.length > 0
+      ) {
+        return responses.errorResponse(
+          res,
+          400,
+          "This cash fund cannot be deleted as it has requisitions or transactions attached to it"
+        );
+      }
+
       await fundService.deletePettyCashFund(fundId);
 
       return responses.successResponse(

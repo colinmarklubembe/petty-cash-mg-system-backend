@@ -56,4 +56,11 @@ router.put(
   requisitionController.stallRequisition
 );
 
+router.delete(
+  "/delete-requisition/:requisitionId",
+  authenticate.checkCompanyId,
+  authenticate.authenticateToken,
+  requisitionController.deleteRequisition
+);
+
 export default router;
