@@ -11,6 +11,18 @@ class PettyCashFundService {
     return prisma.pettyCashFund.findMany();
   }
 
+  async getAllCompanyPettyCashFunds(companyId: string) {
+    return prisma.pettyCashFund.findMany({
+      where: {
+        companyId,
+      },
+      include: {
+        requisitions: true,
+        transactions: true,
+      },
+    });
+  }
+
   async getPettyCashFundById(fundId: string) {
     return prisma.pettyCashFund.findUnique({
       where: {
