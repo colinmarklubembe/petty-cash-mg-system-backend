@@ -33,16 +33,15 @@ class Dashboard {
       );
     }
 
-    const dashboardData = await dashboardService.getAdminDashboardData(
-      companyId
-    );
+    const data = await dashboardService.getAdminDashboardData(companyId);
+    const dashboardData = data.data;
 
     return responses.successResponse(
       res,
       200,
       "Admin dashboard retrieved successfully",
       {
-        data: dashboardData.data,
+        dashboardData,
       }
     );
   }
