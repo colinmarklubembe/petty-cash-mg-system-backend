@@ -4,6 +4,7 @@ import {
   requisitionService,
   transactionService,
 } from ".";
+import company from "./company";
 
 class DashboardService {
   async getAdminDashboardData(companyId: string) {
@@ -35,17 +36,13 @@ class DashboardService {
       status: 200,
       data: {
         totalUsers: companyUsers.data.totalUsers,
-        companyFunds: {
-          totatFunds: companyFunds.data,
-          funds: companyFunds.data.companyFunds,
-        },
+        companyFunds: companyFunds.data.companyFunds,
+        totatFunds: companyFunds.data.totalFunds,
         monthlyTransactions: monthlyTransactions.data.totalMonthlyTransactions,
         monthlyRequisitions: monthlyRequisitions.data.totalMonthlyRequisitions,
-        activeFunds: {
-          totalActiveFunds: activeFunds.data?.totalActiveFunds,
-          activeFunds: activeFunds.data?.activeFunds,
-        },
-        spendingByFund: spendingByFund.data,
+        totalActiveFunds: activeFunds.data?.totalActiveFunds,
+        activeFunds: activeFunds.data?.activeFunds,
+        spendingByFund: spendingByFund.data?.spendingByFund,
       },
     };
   }
