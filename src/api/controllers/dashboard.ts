@@ -42,7 +42,7 @@ class Dashboard {
       200,
       "Admin dashboard retrieved successfully",
       {
-        data: dashboardData,
+        data: dashboardData.data,
       }
     );
   }
