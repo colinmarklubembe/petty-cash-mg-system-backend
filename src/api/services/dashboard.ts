@@ -37,7 +37,7 @@ class DashboardService {
       data: {
         totalUsers: companyUsers.data.totalUsers,
         companyFunds: companyFunds.data.companyFunds,
-        totatFunds: companyFunds.data.totalFunds,
+        totalFunds: companyFunds.data.totalFunds,
         monthlyTransactions: monthlyTransactions.data.totalMonthlyTransactions,
         monthlyRequisitions: monthlyRequisitions.data.totalMonthlyRequisitions,
         totalActiveFunds: activeFunds.data?.totalActiveFunds,
