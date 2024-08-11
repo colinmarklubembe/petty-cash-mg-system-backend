@@ -232,9 +232,10 @@ class TransactionController {
     }
   }
 
-  async getTransactions(req: AuthenticatedRequest, res: Response) {
+  async getUserTransactions(req: AuthenticatedRequest, res: Response) {
     try {
       const { email } = req.user!;
+      const { companyId } = req.company!;
 
       const user = await userService.findUserByEmail(email);
 
@@ -242,8 +243,9 @@ class TransactionController {
         return responses.errorResponse(res, 404, "User not found");
       }
 
-      const transactions = await transactionService.getTransactionsByUserId(
-        user.id
+      const transactions = await transactionService.getUserTransactions(
+        user.id,
+        companyId
       );
 
       return responses.successResponse(

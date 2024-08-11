@@ -24,9 +24,10 @@ router.delete(
 );
 
 router.get(
-  "/get-transactions",
+  "/user-transactions",
   authenticate.authenticateToken,
-  transactionController.getTransactions
+  authenticate.checkCompanyId,
+  transactionController.getUserTransactions
 );
 
 router.get(

@@ -32,6 +32,7 @@ router.get(
 router.get(
   "/user-requisitions",
   authenticate.authenticateToken,
+  authenticate.checkCompanyId,
   requisitionController.getUserRequisitions
 );
 

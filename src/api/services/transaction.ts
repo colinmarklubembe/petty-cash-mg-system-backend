@@ -49,6 +49,15 @@ class TransactionService {
     });
   }
 
+  async getUserTransactions(userId: string, companyId: string) {
+    return prisma.transaction.findMany({
+      where: {
+        userId,
+        companyId,
+      },
+    });
+  }
+
   async getAllTransactions(companyId: string) {
     return prisma.transaction.findMany({
       where: {
