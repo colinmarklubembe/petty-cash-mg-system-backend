@@ -61,13 +61,16 @@ class Dashboard {
       companyId
     );
 
-    if (userCompany.role !== Role.EMPLOYEE) {
-      return responses.errorResponse(
-        res,
-        404,
-        "Unable to load employee dashbaord for this user!"
-      );
-    }
+    // if (
+    //   userCompany.role !== Role.EMPLOYEE ||
+    //   userCompany.role !== Role.FINANCE
+    // ) {
+    //   return responses.errorResponse(
+    //     res,
+    //     404,
+    //     "Unable to load employee dashbaord for this user!"
+    //   );
+    // }
 
     const data = await dashboardService.getUserDashboardData(
       user.id,
