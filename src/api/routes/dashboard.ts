@@ -11,4 +11,11 @@ router.get(
   dashboardController.getAdminDashboard
 );
 
+router.get(
+  "/user",
+  authenticate.checkCompanyId,
+  authenticate.authenticateToken,
+  dashboardController.getUserDashboard
+);
+
 export default router;

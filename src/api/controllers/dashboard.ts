@@ -45,6 +45,45 @@ class Dashboard {
       }
     );
   }
+
+  async getUserDashboard(req: AuthenticatedRequest, res: Response) {
+    const { email } = req.user!;
+    const { companyId } = req.company!;
+
+    const user = await userService.findUserByEmail(email);
+
+    if (!user) {
+      return responses.errorResponse(res, 404, "User not found!");
+    }
+
+    const userCompany = await companyService.findUserCompany(
+      user.id,
+      companyId
+    );
+
+    if (userCompany.role !== Role.EMPLOYEE) {
+      return responses.errorResponse(
+        res,
+        404,
+        "Unable to load employee dashbaord for this user!"
+      );
+    }
+
+    const data = await dashboardService.getUserDashboardData(
+      user.id,
+      companyId
+    );
+    const dashboardData = data.data;
+
+    return responses.successResponse(
+      res,
+      200,
+      "Employee dashboard retrieved successfully",
+      {
+        dashboardData,
+      }
+    );
+  }
 }
 
 export default new Dashboard();
