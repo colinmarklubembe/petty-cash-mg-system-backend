@@ -23,7 +23,7 @@ router.get(
   "/get-all",
   authenticate.checkCompanyId,
   authenticate.authenticateToken,
-  fundController.getAllPettyCashFunds
+  fundController.getAllCompanyFunds
 );
 
 router.get(

@@ -143,19 +143,11 @@ class PettyCashFundController {
     }
   }
 
-  async getAllPettyCashFunds(req: AuthenticatedRequest, res: Response) {
+  async getAllCompanyFunds(req: AuthenticatedRequest, res: Response) {
     try {
-      const { email } = req.user!;
       const { companyId } = req.company!;
 
-      const user = await userService.findUserByEmail(email);
-
-      if (!user) {
-        return responses.errorResponse(res, 404, "User not found");
-      }
-
-      const pettyCashFunds = await fundService.getPettyCashFundByUserId(
-        user.id,
+      const pettyCashFunds = await fundService.getAllCompanyPettyCashFunds(
         companyId
       );
 
