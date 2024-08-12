@@ -19,7 +19,7 @@ const app = express();
 // Configure CORS to allow multiple origins
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://cashfusion-v1-ju3lxvs5d-colinmarklubembes-projects.vercel.app/",
+  "https://cashfusion-v1-ju3lxvs5d-colinmarklubembes-projects.vercel.app",
 ];
 
 app.use(
