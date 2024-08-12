@@ -4,6 +4,7 @@ import {
   mapStringToEnum,
   responses,
   sendEmails,
+  hashPassword,
 } from "../../../utils";
 import { companyService } from "../../services";
 import userService from "../../auth/services/userService";
@@ -64,11 +65,13 @@ class InviteUser {
 
     const password = generateRandomPassword();
 
+    const hashedPassword = await hashPassword(password);
+
     const data = {
       firstName,
       lastName,
       email,
-      password,
+      password: hashedPassword,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
