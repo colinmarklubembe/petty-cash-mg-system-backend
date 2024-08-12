@@ -20,12 +20,14 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:3000",
   "https://cashfusion-v1-ju3lxvs5d-colinmarklubembes-projects.vercel.app",
+  "https://cashfusion-v1.vercel.app",
 ];
 
 app.use(
   cors({
     origin: (origin: any, callback: any) => {
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      console.log(`CORS request from: ${origin}`);
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
