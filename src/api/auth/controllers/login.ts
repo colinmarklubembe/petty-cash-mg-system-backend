@@ -12,9 +12,9 @@ const login = async (req: Request, res: Response) => {
       return responses.errorResponse(res, 404, "User not found");
     }
 
-    if (!user.isVerified) {
-      return responses.errorResponse(res, 401, "User is not verified");
-    }
+    // if (!user.isVerified) {
+    //   return responses.errorResponse(res, 401, "User is not verified");
+    // }
 
     if (!user.isActivated) {
       const userId = user.id;
