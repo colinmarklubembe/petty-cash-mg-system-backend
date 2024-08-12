@@ -16,9 +16,23 @@ dotenv.config();
 const cors = require("cors");
 const app = express();
 
-app.use(cors());
+// Configure CORS to allow multiple origins
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://cashfusion-v1-ju3lxvs5d-colinmarklubembes-projects.vercel.app/",
+];
 
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use(
+  cors({
+    origin: (origin: any, callback: any) => {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 
 const port = process.env.PORT || 5000;
 
