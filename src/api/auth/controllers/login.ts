@@ -6,19 +6,16 @@ const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   try {
-    // Check if user exists
     const user = await userService.findUserByEmail(email);
 
     if (!user) {
       return responses.errorResponse(res, 404, "User not found");
     }
 
-    // Check if user is verified
-    // if (!user.isVerified) {
-    //   return responses.errorResponse(res, 401, "User is not verified");
-    // }
+    if (!user.isVerified) {
+      return responses.errorResponse(res, 401, "User is not verified");
+    }
 
-    //check if user is active
     if (!user.isActivated) {
       const userId = user.id;
       const newData = {
@@ -31,7 +28,6 @@ const login = async (req: Request, res: Response) => {
 
     const hashedPassword = user.password;
 
-    // Compare passwords
     const isMatch = comparePassword.comparePassword(password, hashedPassword);
 
     if (!isMatch) {
@@ -44,7 +40,6 @@ const login = async (req: Request, res: Response) => {
 
     const userId = user.id;
 
-    // Create token data
     const tokenData = {
       id: userId,
       email: user.email,
@@ -52,13 +47,11 @@ const login = async (req: Request, res: Response) => {
       middleName: user.middleName,
       lastName: user.lastName,
       isVerified: user.isVerified,
-      createdAt: new Date().toISOString(), // temporarily store the token creation date
+      createdAt: new Date().toISOString(),
     };
 
-    // get the updated user
     const updatedUser = await userService.findUserById(userId);
 
-    // Create token
     const token = generateToken.generateToken(tokenData);
 
     res

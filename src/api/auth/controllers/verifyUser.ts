@@ -44,7 +44,7 @@ const verifyUser = async (req: Request, res: Response) => {
 
     const user = await userService.updateUser(userId, newData);
 
-    res.status(200).redirect("http://localhost:3000/verifiedEmail");
+    res.status(200).redirect("http://localhost:3000/login");
   } catch (error: any) {
     responses.errorResponse(res, 500, error.message);
   }

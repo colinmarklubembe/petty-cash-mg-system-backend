@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { sendEmails, responses } from "../../../utils";
+import { sendEmails, responses, systemLog } from "../../../utils";
 import userService from "../services/userService";
 
 interface AuthenticatedRequest extends Request {
@@ -29,14 +29,17 @@ const updateProfile = async (req: AuthenticatedRequest, res: Response) => {
 
     const updatedUser = await userService.updateUser(userId, newData);
 
-    // // send update profile email to user
-    // const emailData = {
-    //   email: user.email,
-    //   name: user.firstName,
-    // };
+    const emailData = {
+      email: user.email,
+      name: `${user.firstName} ${user.lastName}`,
+    };
 
-    // // Send invitation email
-    // const response = await sendEmails.sendUpdatedProfileEmail(emailData);
+    // Send invitation email
+    const response = await sendEmails.sendUpdatedProfileEmail(emailData);
+
+    if (response.status !== 200) {
+      systemLog.systemError("Email could not be sent");
+    }
 
     responses.successResponse(res, 200, "Profile updated successfully", {
       user: updatedUser,

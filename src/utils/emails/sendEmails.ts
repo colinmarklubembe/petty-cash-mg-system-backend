@@ -1,4 +1,4 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 require("dotenv").config();
 
 import {
@@ -7,97 +7,83 @@ import {
   forgotPasswordEmailTemplate,
   inviteNewUserTemplate,
   inviteExistingUserTemplate,
-} from "./templates";
+} from "./email templates";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Create a Nodemailer transporter using SMTP
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT!, 10),
+  secure: false,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
+
+const sendEmail = async (emailOptions: any) => {
+  try {
+    let info = await transporter.sendMail(emailOptions);
+    return {
+      status: 200,
+      message: "Email sent successfully!",
+      info,
+    };
+  } catch (error: any) {
+    return {
+      status: 500,
+      message: `Failed to send email: ${error.message}`,
+    };
+  }
+};
 
 const sendVerificationEmail = async (emailData: any) => {
-  const verificationResponse = await resend.emails.send({
-    from: `NovaCRM <${process.env.RESEND_SENDER_EMAIL}>`,
+  const emailOptions = {
+    from: `CashFusion <${process.env.SMTP_FROM_EMAIL}>`,
     to: emailData.email,
     subject: "Verify Your Account",
     html: verificationEmailTemplate(emailData),
-  });
-
-  if (!verificationResponse.data) {
-    return { status: 403, message: verificationResponse.error };
-  } else {
-    return {
-      status: 200,
-      message: "Verification email sent successfully",
-    };
-  }
+  };
+  return sendEmail(emailOptions);
 };
 
 const sendUpdatedProfileEmail = async (emailData: any) => {
-  const updatedResponse = await resend.emails.send({
-    from: `NovaCRM <${process.env.RESEND_SENDER_EMAIL}>`,
+  const emailOptions = {
+    from: `CashFusion <${process.env.SMTP_FROM_EMAIL}>`,
     to: emailData.email,
     subject: "Your Profile Has Been Updated",
     html: updatedProfileEmailTemplate(emailData),
-  });
-
-  if (!updatedResponse.data) {
-    return { status: 403, message: updatedResponse.error };
-  } else {
-    return {
-      status: 200,
-      message: "Email sent!",
-    };
-  }
+  };
+  return sendEmail(emailOptions);
 };
 
 const sendForgotPasswordEmail = async (emailData: any) => {
-  const forgotPasswordResponse = await resend.emails.send({
-    from: `NovaCRM <${process.env.RESEND_SENDER_EMAIL}>`,
+  const emailOptions = {
+    from: `CashFusion <${process.env.SMTP_FROM_EMAIL}>`,
     to: emailData.email,
     subject: "Reset Your Password",
     html: forgotPasswordEmailTemplate(emailData),
-  });
-
-  if (!forgotPasswordResponse.data) {
-    return { status: 400 };
-  } else {
-    return {
-      status: 200,
-    };
-  }
+  };
+  return sendEmail(emailOptions);
 };
 
 const sendInviteEmail = async (emailData: any) => {
-  const inviteResponse = await resend.emails.send({
-    from: `NovaCRM <${process.env.RESEND_SENDER_EMAIL}>`,
+  const emailOptions = {
+    from: `CashFusion <${process.env.SMTP_FROM_EMAIL}>`,
     to: emailData.email,
-    subject: "You're Invited to Join NovaCRM",
+    subject: "You're Invited to Join CashFusion",
     html: inviteNewUserTemplate(emailData),
-  });
-
-  if (!inviteResponse.data) {
-    return { status: 400, message: inviteResponse.error };
-  } else {
-    return {
-      status: 200,
-      message: "Email Sent!",
-    };
-  }
+  };
+  return sendEmail(emailOptions);
 };
 
 const sendInviteEmailToExistingUser = async (emailData: any) => {
-  const inviteResponse = await resend.emails.send({
-    from: `NovaCRM <${process.env.RESEND_SENDER_EMAIL}>`,
+  const emailOptions = {
+    from: `CashFusion <${process.env.SMTP_FROM_EMAIL}>`,
     to: emailData.email,
-    subject: "You're Invited to Join NovaCRM",
+    subject: "You're Invited to Join CashFusion",
     html: inviteExistingUserTemplate(emailData),
-  });
-
-  if (!inviteResponse.data) {
-    return { status: 400, message: inviteResponse.error };
-  } else {
-    return {
-      status: 200,
-      message: "Email Sent!",
-    };
-  }
+  };
+  return sendEmail(emailOptions);
 };
 
 export default {

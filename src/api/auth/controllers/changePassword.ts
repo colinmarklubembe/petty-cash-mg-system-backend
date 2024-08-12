@@ -18,7 +18,6 @@ const changePassword = async (req: AuthenticatedRequest, res: Response) => {
       return responses.errorResponse(res, 404, "User does not exist");
     }
 
-    // compare old password
     const isMatch = await bcryptjs.compare(oldPassword, user.password);
     if (!isMatch) {
       return responses.errorResponse(res, 400, "Old password is incorrect");
@@ -26,7 +25,6 @@ const changePassword = async (req: AuthenticatedRequest, res: Response) => {
 
     const password = newPassword;
 
-    // validate password strength
     const passwordStrength =
       checkPasswordStrength.validatePasswordStrength(password);
 
@@ -38,7 +36,6 @@ const changePassword = async (req: AuthenticatedRequest, res: Response) => {
       );
     }
 
-    // hash new password
     const hashedPassword = await hashPassword(password);
 
     const userId = user.id;
@@ -48,7 +45,6 @@ const changePassword = async (req: AuthenticatedRequest, res: Response) => {
       updatedAt: new Date().toISOString(),
     };
 
-    // update password
     await userService.updateUser(userId, newData);
 
     responses.successResponse(res, 200, "Password changed successfully");
@@ -70,7 +66,6 @@ const resetPassword = async (req: Request, res: Response) => {
 
     const password = newPassword;
 
-    // validate password strength
     const passwordStrength =
       checkPasswordStrength.validatePasswordStrength(password);
 
@@ -82,7 +77,6 @@ const resetPassword = async (req: Request, res: Response) => {
       );
     }
 
-    // hash new password
     const hashedPassword = await hashPassword(password);
 
     const userId = id;
@@ -91,7 +85,6 @@ const resetPassword = async (req: Request, res: Response) => {
       updatedAt: new Date().toISOString(),
     };
 
-    // update password
     const updatedPassword = await userService.updateUser(userId, newData);
 
     responses.successResponse(res, 200, "Password reset successfully");

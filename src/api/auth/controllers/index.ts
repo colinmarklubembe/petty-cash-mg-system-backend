@@ -6,4 +6,4 @@ export { default as inviteUserController } from "./inviteUser";
 export { default as loginController } from "./login";
 export { default as signupController } from "./signup";
 export { default as updateProfileController } from "./updateProfile";
-// export { default as verifyUserController } from "./verifyUser";
+export { default as verifyUserController } from "./verifyUser";

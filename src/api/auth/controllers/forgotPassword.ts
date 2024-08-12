@@ -18,7 +18,6 @@ const forgotPassword = async (req: Request, res: Response) => {
       name: user.firstName,
     };
 
-    // send email with password reset link
     const emailResponse: { status: number } =
       await sendEmails.sendForgotPasswordEmail(emailData);
 

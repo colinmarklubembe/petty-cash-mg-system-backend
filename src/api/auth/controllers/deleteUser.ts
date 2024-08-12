@@ -6,7 +6,6 @@ const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
-    // check if user exists
     const user = await userService.findUserById(id);
 
     if (!user) {

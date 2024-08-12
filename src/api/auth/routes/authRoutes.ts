@@ -3,7 +3,7 @@ import { Router } from "express";
 import {
   signupController,
   loginController,
-  // verifyUserController,
+  verifyUserController,
   changePasswordController,
   forgotPasswordController,
   inviteUserController,
@@ -26,13 +26,13 @@ router.post(
   signupController.signup
 );
 
-// router.get("/verify", verifyUserController.verifyUser);
+router.get("/verify", verifyUserController.verifyUser);
 
-// router.post(
-//   "/reverify",
-//   checkMissingFields(["email"]),
-//   verifyUserController.reverifyUser
-// );
+router.post(
+  "/reverify",
+  checkMissingFields(["email"]),
+  verifyUserController.reverifyUser
+);
 
 router.post(
   "/login",

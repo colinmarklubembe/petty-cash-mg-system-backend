@@ -1,11 +1,11 @@
 import { responses } from "../../../utils";
-import { Request, Response } from "express";
 import { companyService } from "../../services";
+import { Request, Response } from "express";
 import userService from "../../auth/services/userService";
 
 interface AuthenticatedRequest extends Request {
-  company?: { companyId: string };
   user?: { email: string };
+  company?: { companyId: string };
 }
 
 class GetUserController {

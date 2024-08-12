@@ -26,6 +26,8 @@ class InviteUser {
       throw { status: 404, message: "User not found" };
     }
 
+    const company = await companyService.getCompany(companyId);
+
     const userId = user.id;
     const mappedRole = mapStringToEnum.mapStringToRole(res, role);
 
@@ -37,6 +39,15 @@ class InviteUser {
     }
 
     await companyService.addUserToCompany(userId, companyId, mappedRole);
+
+    const emailData = {
+      name: `${user.firstName} ${user.lastName}`,
+      email,
+      companyName: company.name,
+      role: role,
+    };
+
+    await sendEmails.sendInviteEmailToExistingUser(emailData);
 
     return { status: 200, message: "User added successfully", data: user };
   };
@@ -70,6 +81,7 @@ class InviteUser {
     await companyService.addUserToCompany(userId, companyId, mappedRole);
 
     const emailData = {
+      name: `${firstName} ${lastName}`,
       email,
       password,
       companyName: company.name,
