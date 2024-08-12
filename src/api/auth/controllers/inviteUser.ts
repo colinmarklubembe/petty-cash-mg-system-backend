@@ -88,7 +88,7 @@ class InviteUser {
       role: role,
     };
 
-    await sendEmails.sendInviteEmailToExistingUser(emailData);
+    await sendEmails.sendInviteEmail(emailData);
 
     return { status: 200, message: "User added successfully", data: newUser };
   };
